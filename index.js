@@ -12,8 +12,6 @@ require('dotenv').config()
 
 
 
-
-
 app.enable('case sensitive routing');
 
 app.get('/', (req, res) => {
