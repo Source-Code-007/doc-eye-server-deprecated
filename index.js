@@ -15,7 +15,18 @@ app.use('/admin', adminRouter) // using sub app for admin router
 // prepare the final multer upload object
 const fileUploadDest = './upload'
 const upload = multer({
-    dest: fileUploadDest
+    dest: fileUploadDest,
+    limits: {
+        fileSize: 1000000 // 1MB - By bytes
+    }, 
+    fileFilter: (req, file, callback)=>{
+        console.log(file);
+        if(file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg'){
+            callback(null, true) // first param - error null, second param - permit true
+        } else{
+            callback(new Error('Only .jpg, .jpeg and .png format allowed!'))
+        }
+    }
 })
 
 app.enable('case sensitive routing');
@@ -29,25 +40,27 @@ app.get('/test', (req, res) => {
     res.send('This is test')
 })
 
-// upload single files
+
+// ----upload files----
+// upload single files 
 app.post('/upload-profile', upload.single('profile-picture'), (req, res)=> {
     res.send('testing file uploaded!')
 })
-// upload multiple files #3 is max file
-app.post('/upload-profile', upload.array('profile-pictures', 3), (req, res)=> {
-    res.send('testing files uploaded!')
-})
-// upload multiple files for different files
-app.post('/upload-profile', upload.fields([
-    {'profile-photo': 4},
-    {'medicine-photo': 3}
-]), (req, res)=> {
-    res.send('testing files uploaded!')
-})
+// // upload multiple files #3 is max file
+// app.post('/upload-profile', upload.array('profile-pictures', 3), (req, res)=> {
+//     res.send('testing files uploaded!')
+// })
+// // upload multiple files for different files
+// app.post('/upload-profile', upload.fields([
+//     {name: 'profile-photo', maxCount: 4},
+//     {name: 'medicine-photo', maxCount: 3}
+// ]), (req, res)=> {
+//     res.send('testing files uploaded!')
+// })
 
 
 
-// 404 Error handling
+// ----404 Error handling----
 app.use((req, res, next)=>{
     res.status(404).send('Requested URL was not found!')
 })
@@ -56,7 +69,11 @@ app.use((req, res, next)=>{
 // Error handling middleware
 app.use((err, req, res, next)=>{
     if(err.message){
-        res.status(500).send({message:err.message})
+        if(err instanceof multer.MulterError){
+            res.status(500).send({message: 'There was an file upload related error!'})
+        } else{
+            res.status(500).send({message:err.message})
+        }
     } else{
         res.status(500).send("There was an error!")
     }
