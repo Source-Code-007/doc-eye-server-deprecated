@@ -27,7 +27,7 @@ const storage = multer.diskStorage({
         // const modifiedFileNameArr = file.originalname.split('.');
         // const fileExt = modifiedFileNameArr.at(-1)
         const fileExt = path.extname(file.originalname)
-        const modifiedName = `${file.originalname.replace(fileExt, '').toLowerCase().split('-').join('')}-${Date.now()}${fileExt}`
+        const modifiedName = `${file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-')}-${Date.now()}${fileExt}`
         console.log(modifiedName);
         cb(null, modifiedName)
     }
