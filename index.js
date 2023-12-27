@@ -61,6 +61,7 @@ const upload = multer({
 
 app.enable('case sensitive routing');
 
+
 app.get('/', (req, res) => {
     console.log('homepage');
     res.send('This is homepage')
@@ -74,10 +75,12 @@ app.get('/test', (req, res) => {
 // ----upload files----
 // upload single files 
 // app.post('/upload-profile', upload.single('profile-picture'), (req, res)=> {
+// console.log(req.file);
 //     res.send('testing file uploaded!')
 // })
 // // upload multiple files #3 is max file
 // app.post('/upload-profile', upload.array('profile-pictures', 3), (req, res)=> {
+// console.log(req.files);
 //     res.send('testing files uploaded!')
 // })
 // // upload multiple files for different files
@@ -86,6 +89,7 @@ app.post('/upload-profile', upload.fields([
     { name: 'doctor-documents', maxCount: 3 },
     { name: 'medicine-photos', maxCount: 3 },
 ]), (req, res) => {
+    console.log(req.files);
     res.send('testing files uploaded!')
 })
 
