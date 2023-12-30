@@ -1,4 +1,5 @@
 const express = require('express');
+const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
 const adminRouter = require('./admin/adminRouter')
@@ -14,9 +15,8 @@ app.use(express.json())
 app.use('/admin', adminRouter) // using sub app for admin router
 
 
-// prepare the final multer upload object
+// ---- prepare the final multer upload object ----
 const fileUploadDest = './upload'
-
 // define storage 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
@@ -31,7 +31,6 @@ const storage = multer.diskStorage({
         cb(null, modifiedName)
     }
 })
-
 // file upload config and operation
 const upload = multer({
     storage: storage,
@@ -58,8 +57,12 @@ const upload = multer({
     }
 })
 
-app.enable('case sensitive routing');
 
+
+// database connection with mongoose
+mongoose.connect('mongodb://localhost/doceye')
+    .then(() => console.log('connection successful'))
+    .catch((e) => console.log('connection lost for err!', e))
 
 app.get('/', (req, res) => {
     console.log('homepage');
