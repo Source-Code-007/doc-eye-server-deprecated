@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
-const adminRouter = require('./admin/adminRouter')
+const adminRouter = require('./routeHandler/adminRouter')
+const doctorRouter = require('./routeHandler/doctorRouter')
 const multer = require('multer')
 const path = require('path')
 
@@ -13,6 +14,7 @@ require('dotenv').config()
 app.use(cors())
 app.use(express.json())
 app.use('/admin', adminRouter) // using sub app for admin router
+app.use('/doctor', doctorRouter) // using sub app for doctor router
 
 
 // ---- prepare the final multer upload object ----
@@ -60,7 +62,8 @@ const upload = multer({
 
 
 // database connection with mongoose
-mongoose.connect('mongodb://localhost/doceye')
+const mongoURL = `mongodb+srv://${process.env.mongoUsername}:${process.env.mongoPass}@cluster0.iw4kl2c.mongodb.net/?retryWrites=true&w=majority`;
+mongoose.connect(mongoURL)
     .then(() => console.log('connection successful'))
     .catch((e) => console.log('connection lost for err!', e))
 
