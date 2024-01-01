@@ -10,7 +10,6 @@ const path = require('path')
 const port = process.env.PORT || 4000
 require('dotenv').config()
 
-
 app.use(cors())
 app.use(express.json())
 app.use('/admin', adminRouter) // using sub app for admin router
