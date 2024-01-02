@@ -12,15 +12,14 @@ doctorRouter.get('/all-doctors', (req, res) => {
 
 // insert a doctor
 doctorRouter.post('/insert-doctor', async (req, res) => {
-    const newDoctor = new doctor(req.body)
 
-    await newDoctor.save(err => {
-        if (err) {
-            res.status(500).send({ message: 'There was a server side error!' })
-        } else {
-            res.status(200).send({ message: 'doctor inserted successfully!' })
-        }
-    })
+    try {
+        const newDoctor = new doctor(req.body)
+        await newDoctor.save()
+        res.status(200).send({ message: 'doctor inserted successfully!' })
+    } catch (e) {
+        res.status(500).send({ message: 'There was a server side error!' })
+    }
 })
 
 module.exports = doctorRouter
