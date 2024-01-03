@@ -62,7 +62,7 @@ const upload = multer({
 
 // database connection with mongoose
 const mongoURL = `mongodb+srv://${process.env.mongoUsername}:${process.env.mongoPass}@cluster0.iw4kl2c.mongodb.net/?retryWrites=true&w=majority`;
-mongoose.connect(mongoURL)
+mongoose.connect(mongoURL, {dbName:'docEye'})
     .then(() => console.log('connection successful'))
     .catch((e) => console.log('connection lost for err!', e))
 
