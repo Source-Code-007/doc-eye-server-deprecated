@@ -10,9 +10,9 @@ doctorRouter.get('/all-doctors', (req, res) => {
     res.send('All doctors')
 })
 
+
 // insert a doctor
 doctorRouter.post('/insert-doctor', async (req, res) => {
-
     try {
         const newDoctor = new doctor(req.body)
         await newDoctor.save()
