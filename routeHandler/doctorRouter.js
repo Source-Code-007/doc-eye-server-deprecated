@@ -30,6 +30,7 @@ doctorRouter.get('/all-doctors', async (req, res) => {
     }
 })
 
+
 // Get expected doctor
 doctorRouter.get('/expected-doctor/:id', async (req, res) => {
     try {
