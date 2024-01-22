@@ -7,8 +7,10 @@ const doctorRouter = require('./routeHandler/doctorRouter')
 const multer = require('multer')
 const path = require('path')
 
+
 const port = process.env.PORT || 4000
 require('dotenv').config()
+
 
 app.use(cors())
 app.use(express.json())
