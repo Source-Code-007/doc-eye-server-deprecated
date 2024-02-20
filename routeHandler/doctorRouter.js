@@ -5,6 +5,7 @@ const doctorSchema = require('../schemas/doctorSchema')
 const Doctor = new mongoose.model('Doctor', doctorSchema)
 
 
+
 // insert a doctor
 doctorRouter.post('/insert-doctor', async (req, res) => {
     try {
@@ -18,16 +19,22 @@ doctorRouter.post('/insert-doctor', async (req, res) => {
 
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
-    // const allDoctors = await Doctor.find({}).select({__v:0})
-    const allDoctors = await Doctor.find({}, { __v: 0 })
-    if (allDoctors) {
-        res.status(200).send({
-            message: 'Doctors found!',
-            data: allDoctors
-        })
-    } else {
-        res.status(500).send({ message: 'Doctors not found!' })
+    // const allDoctors = await Doctor.find({}).select({ __v: 0 })
+    try {
+        const allDoctors = await Doctor.find({}, { __v: 0 })
+        if (allDoctors) {
+            res.status(200).send({
+                message: 'Doctors found!',
+                data: allDoctors
+            })
+        } else {
+            res.status(500).send({ message: 'Doctors not found!' })
+        }
     }
+    catch (e) {
+        res.status(500).send({ message: 'There was a server side error!' })
+    }
+
 })
 
 

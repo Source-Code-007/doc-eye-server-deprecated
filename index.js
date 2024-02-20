@@ -28,8 +28,6 @@ const storage = multer.diskStorage({
         cb(null, fileUploadDest)
     },
     filename: (req, file, cb) => {
-        // const modifiedFileNameArr = file.originalname.split('.');
-        // const fileExt = modifiedFileNameArr.at(-1)
         const fileExt = path.extname(file.originalname)
         const modifiedName = `${file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-')}-${Date.now()}${fileExt}`
         console.log(modifiedName);
@@ -45,6 +43,12 @@ const upload = multer({
     fileFilter: (req, file, callback) => {
         console.log(file);
         if (file.fieldname === 'medicine-photos') {
+            if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
+                callback(null, true) // first param - error null, second param - permit true
+            } else {
+                callback(new Error('Only .jpg, .jpeg and .png format allowed!'))
+            }
+        } else if (file.fieldname === 'specialty-photos') {
             if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
                 callback(null, true) // first param - error null, second param - permit true
             } else {
@@ -66,7 +70,7 @@ const upload = multer({
 
 // database connection with mongoose
 const mongoURL = `mongodb+srv://${process.env.mongoUsername}:${process.env.mongoPass}@cluster0.iw4kl2c.mongodb.net/?retryWrites=true&w=majority`;
-mongoose.connect(mongoURL, {dbName:'docEye'})
+mongoose.connect(mongoURL, { dbName: 'docEye' })
     .then(() => console.log('Database connection successful'))
     .catch((e) => console.log('Database connection lost for this err: ', e.message))
 
