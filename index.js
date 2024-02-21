@@ -5,7 +5,8 @@ const app = express()
 const adminRouter = require('./routeHandler/adminRouter')
 const doctorRouter = require('./routeHandler/doctorRouter')
 const multer = require('multer')
-const path = require('path')
+const path = require('path');
+const userRouter = require('./routeHandler/userRouter');
 
 
 
@@ -16,6 +17,7 @@ require('dotenv').config()
 
 app.use(cors())
 app.use(express.json())
+app.use('/', userRouter)
 app.use('/admin', adminRouter) // using sub app for admin router
 app.use('/doctor', doctorRouter) // using sub app for doctor router
 

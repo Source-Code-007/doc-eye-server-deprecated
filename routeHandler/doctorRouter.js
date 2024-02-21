@@ -17,6 +17,7 @@ doctorRouter.post('/insert-doctor', async (req, res) => {
     }
 })
 
+
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
