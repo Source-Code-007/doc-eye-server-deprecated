@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const doctorRouter = express.Router('')
 const doctorSchema = require('../schemas/doctorSchema')
+const jwtVerify = require('../middleware/jwtVerify')
 const Doctor = new mongoose.model('Doctor', doctorSchema)
 
 
@@ -39,8 +40,9 @@ doctorRouter.get('/all-doctors', async (req, res) => {
 })
 
 
-// Get expected doctor
-doctorRouter.get('/expected-doctor/:id', async (req, res) => {
+// Get expected doctor 
+// TODO: [demo protected route]
+doctorRouter.get('/expected-doctor/:id', jwtVerify, async (req, res) => {
     try {
         const _id = req.params?.id
         const expectedDoctor = await Doctor.findById(_id).select({ __v: 0 })

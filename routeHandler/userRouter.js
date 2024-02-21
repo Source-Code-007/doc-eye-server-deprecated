@@ -1,6 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
 const userRouter = express.Router()
 const userSchema = require('../schemas/userSchema')
 const User = new mongoose.model('user', userSchema)
@@ -28,7 +29,8 @@ userRouter.post('/signin', async (req, res) => {
         if (user) {
             const isValidPass = await bcrypt.compare(password, user?.password) //Password encrypted using bcrypt
             if (isValidPass) {
-                res.status(200).send({ message: 'User found successfully', user })
+                const jwtToken = jwt.sign({email}, process.env.JWT_SECRET, {expiresIn: '1h'})
+                res.status(200).send({ message: 'Login successfully',  token: jwtToken})
             } else {
                 res.status(500).send({ message: 'Authentication failed!' })
             }
