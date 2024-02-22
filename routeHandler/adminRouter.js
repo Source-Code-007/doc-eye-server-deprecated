@@ -3,7 +3,8 @@ const mongoose = require('mongoose')
 const adminRouter = express.Router()
 
 // Schema model
-const specialtySchema = require('../schemas/specialtySchema')
+const specialtySchema = require('../schemas/specialtySchema');
+const jwtVerify = require('../middleware/jwtVerify');
 const Specialty = new mongoose.model('Specialty', specialtySchema)
 
 // Testing middleware
@@ -25,12 +26,30 @@ adminRouter.get('/', (req, res) => {
 })
 
 // Insert specialty
-adminRouter.post('/add-specialty', async(req, res) => {
+adminRouter.post('/add-specialty', jwtVerify, async(req, res) => {
     try{
-        const newSpecialty = new Specialty(req.body)
+        const newSpecialty = new Specialty({...req.body, admin:req.userId})
         await newSpecialty.save()
         res.status(200).send({message: `Specialty inserted successfully!`, _id: newSpecialty?._id})
     }catch(e){
+        if(e?.message){
+            return res.status(500).send({message: e?.message})
+          } 
+          res.status(500).send({message: "There was a server side error!"})
+    }
+})
+// Get specialties
+adminRouter.get('/specialties', async(req, res)=> {
+    try{
+        const specialties = await Specialty.find({}, {__v:0}).populate("admin", "name email -_id")
+        if(specialties){
+          return res.status(200).send(specialties)
+        } 
+        res.status(500).send({ message: 'Specialties not found!' })
+    }catch(e){
+        if(e?.message){
+          return res.status(500).send({message: e?.message})
+        } 
         res.status(500).send({message: "There was a server side error!"})
     }
 })

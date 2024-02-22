@@ -7,9 +7,10 @@ const jwtVerify = async (req, res, next) => {
             return res.status(401).send({ message: "Unauthorized user!" })
         }
         const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET)
-        const { email } = decoded
+        const { email, _id } = decoded
 
         req.email = email
+        req.userId = _id
         next()
     } catch (e) {
         next({ message: `Authentication failure!` })
