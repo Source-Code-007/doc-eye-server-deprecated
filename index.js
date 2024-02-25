@@ -9,10 +9,8 @@ const path = require('path');
 const userRouter = require('./routeHandler/userRouter');
 
 
-
 const port = process.env.PORT || 4000
 require('dotenv').config()
-
 
 
 app.use(cors())
