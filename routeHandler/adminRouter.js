@@ -38,6 +38,7 @@ adminRouter.post('/add-specialty', jwtVerify, async(req, res) => {
           res.status(500).send({message: "There was a server side error!"})
     }
 })
+
 // Get specialties
 adminRouter.get('/specialties', async(req, res)=> {
     try{
