@@ -1,12 +1,17 @@
+// External imports
 const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
-const adminRouter = require('./routeHandler/adminRouter')
-const doctorRouter = require('./routeHandler/doctorRouter')
 const multer = require('multer')
 const path = require('path');
+
+
+// Internal imports
+const adminRouter = require('./routeHandler/adminRouter')
+const doctorRouter = require('./routeHandler/doctorRouter')
 const userRouter = require('./routeHandler/userRouter');
+const {notFoundErr, errorHandle} = require('./middleware/common/errorHandler')
 
 
 const port = process.env.PORT || 4000
@@ -109,23 +114,10 @@ app.post('/upload-profile', upload.fields([
 
 
 // ----404 Error handling----
-app.use((req, res, next) => {
-    res.status(404).send('Requested URL was not found!')
-})
-
+app.use(notFoundErr)
 
 // Error handling middleware
-app.use((err, req, res, next) => {
-    if (err.message) {
-        if (err instanceof multer.MulterError) {
-            res.status(500).send({ message: 'There was an file upload related error!' })
-        } else {
-            res.status(500).send({ message: err.message })
-        }
-    } else {
-        res.status(500).send("There was an error!")
-    }
-})
+app.use(errorHandle)
 
 app.listen(port, () => {
     console.log(`Doc Eye server is running at ${port}!!`);

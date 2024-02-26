@@ -9,6 +9,8 @@ const doctorSchema = mongoose.Schema({
         type: Date,
         default: new Date()
     }
-})
+}, {timestamps: true})
 
-module.exports = doctorSchema 
+
+const Doctor = new mongoose.model('Doctor', doctorSchema)
+module.exports = Doctor

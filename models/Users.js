@@ -5,6 +5,7 @@ const userSchema = mongoose.Schema({
 
     email: {
         type: String,
+        lowercase: true,
         required: [true,'Email required'],
         validate: {
             validator: function (email) {
@@ -14,8 +15,9 @@ const userSchema = mongoose.Schema({
         }
     },
     password: { type: String, required: true },
-    role: { type: String, required: true, enum: ['user', 'doctor', 'admin'] }
-})
+    role: { type: String, required: true, enum: ['user', 'doctor', 'admin'], default: 'user'},
+}, {timestamps: true})
 
 
-module.exports = userSchema
+const User = new mongoose.model("User", userSchema)
+module.exports = User

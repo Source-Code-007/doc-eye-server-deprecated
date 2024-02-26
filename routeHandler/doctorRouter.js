@@ -1,9 +1,8 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const doctorRouter = express.Router('')
-const doctorSchema = require('../schemas/doctorSchema')
 const jwtVerify = require('../middleware/jwtVerify')
-const Doctor = new mongoose.model('Doctor', doctorSchema)
+const Doctor = require('../models/Doctors')
+
 
 
 

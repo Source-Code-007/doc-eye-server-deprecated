@@ -1,11 +1,9 @@
 const express = require('express');
-const mongoose = require('mongoose')
 const adminRouter = express.Router()
-
-// Schema model
-const specialtySchema = require('../schemas/specialtySchema');
 const jwtVerify = require('../middleware/jwtVerify');
-const Specialty = new mongoose.model('Specialty', specialtySchema)
+
+// Model
+const Specialty = require('../models/Specialty');
 
 // Testing middleware
 const adminLogger = (req, res, next) => {

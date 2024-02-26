@@ -23,4 +23,6 @@ const specialtySchema = mongoose.Schema({
     }
 })
 
-module.exports = specialtySchema
+
+const Specialty = new mongoose.model('Specialty', specialtySchema)
+module.exports = Specialty

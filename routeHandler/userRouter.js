@@ -1,10 +1,8 @@
 const express = require('express')
-const mongoose = require('mongoose')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const userRouter = express.Router()
-const userSchema = require('../schemas/userSchema')
-const User = new mongoose.model('User', userSchema)
+const User = require('../models/Users')
 
 
 userRouter.post('/signup', async (req, res) => {
