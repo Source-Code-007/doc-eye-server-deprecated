@@ -3,16 +3,23 @@ const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const userRouter = express.Router()
 const User = require('../models/Users')
+const avatarHandler = require('../middleware/multer/avatarHandler')
 
 
-userRouter.post('/signup', async (req, res) => {
+userRouter.post('/signup', avatarHandler, async (req, res) => {
     try {
-        const { name, email, password, role } = req.body
+        const { name, email, password, role, avatar } = req.body
         const hashPass = await bcrypt.hash(password, 10) //Password encrypted using bcrypt
         const existUser = await User.findOne({ email: email })
 
+
         if (!existUser) {
-            const newUser = new User({ name, email, password: hashPass, role })
+            let newUser; 
+            if(req?.files[0]?.filename){
+                newUser = new User({ name, email, avatar:req?.files[0]?.filename, password: hashPass, role })
+            } else{
+                newUser = new User({ name, email, password: hashPass, role })
+            }
             await newUser.save()
             if (newUser) {
                 res.status(200).send({ message: 'User created successfully' })
@@ -37,7 +44,7 @@ userRouter.post('/signin', async (req, res) => {
         const { email, password } = req.body
         const user = await User.findOne({ email: email }, { __v: 0 })
         if (user) {
-            const isValidPass = await bcrypt.compare(password, user?.password) //Password encrypted using bcrypt
+            const isValidPass = await bcrypt.compare(password, user?.password) //Password decrypted using bcrypt
             if (isValidPass) {
                 const jwtToken = jwt.sign({ email, _id: user?._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
                 res.status(200).send({ message: 'Login successfully', token: jwtToken })

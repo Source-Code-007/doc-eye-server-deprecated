@@ -13,7 +13,7 @@ const jwtVerify = async (req, res, next) => {
         req.userId = _id
         next()
     } catch (e) {
-        next({ message: `Authentication failure!` })
+        next(`Authentication failure!`)
     }
 }
 

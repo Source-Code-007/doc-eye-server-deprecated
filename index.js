@@ -3,8 +3,6 @@ const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors')
 const app = express()
-const multer = require('multer')
-const path = require('path');
 
 
 // Internal imports
@@ -25,51 +23,6 @@ app.use('/admin', adminRouter) // using sub app for admin router
 app.use('/doctor', doctorRouter) // using sub app for doctor router
 
 
-// ---- prepare the final multer upload object ----
-const fileUploadDest = './upload'
-// define storage 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, fileUploadDest)
-    },
-    filename: (req, file, cb) => {
-        const fileExt = path.extname(file.originalname)
-        const modifiedName = `${file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-')}-${Date.now()}${fileExt}`
-        console.log(modifiedName);
-        cb(null, modifiedName)
-    }
-})
-// file upload config and operation
-const upload = multer({
-    storage: storage,
-    limits: {
-        fileSize: 1000000 // 1MB - By bytes
-    },
-    fileFilter: (req, file, callback) => {
-        console.log(file);
-        if (file.fieldname === 'medicine-photos') {
-            if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-                callback(null, true) // first param - error null, second param - permit true
-            } else {
-                callback(new Error('Only .jpg, .jpeg and .png format allowed!'))
-            }
-        } else if (file.fieldname === 'specialty-photos') {
-            if (file.mimetype === 'image/png' || file.mimetype === 'image/jpg' || file.mimetype === 'image/jpeg') {
-                callback(null, true) // first param - error null, second param - permit true
-            } else {
-                callback(new Error('Only .jpg, .jpeg and .png format allowed!'))
-            }
-        } else if (file.fieldname === 'doctor-documents') {
-            if (file.mimetype === 'application/pdf') {
-                callback(null, true) // first param - error null, second param - permit true
-            } else {
-                callback(new Error('Only .pdf format allowed!'))
-            }
-        } else {
-            callback(new Error('File upload err!!!'))
-        }
-    }
-})
 
 
 
@@ -102,14 +55,14 @@ app.get('/test', (req, res) => {
 //     res.send('testing files uploaded!')
 // })
 // // upload multiple files for different files
-app.post('/upload-profile', upload.fields([
-    { name: 'profile-photos', maxCount: 4 },
-    { name: 'doctor-documents', maxCount: 3 },
-    { name: 'medicine-photos', maxCount: 3 },
-]), (req, res) => {
-    console.log(req.files);
-    res.send('testing files uploaded!')
-})
+// app.post('/upload-profile', upload.fields([
+//     { name: 'profile-photos', maxCount: 4 },
+//     { name: 'doctor-documents', maxCount: 3 },
+//     { name: 'medicine-photos', maxCount: 3 },
+// ]), (req, res) => {
+//     console.log(req.files);
+//     res.send('testing files uploaded!')
+// })
 
 
 
