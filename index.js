@@ -23,9 +23,6 @@ app.use('/admin', adminRouter) // using sub app for admin router
 app.use('/doctor', doctorRouter) // using sub app for doctor router
 
 
-
-
-
 // database connection with mongoose
 const mongoURL = `mongodb+srv://${process.env.mongoUsername}:${process.env.mongoPass}@cluster0.iw4kl2c.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.connect(mongoURL, { dbName: 'docEye' })
@@ -37,10 +34,8 @@ app.get('/', (req, res) => {
     res.send('This is homepage')
 })
 app.get('/test', (req, res) => {
-    console.log('homepage test');
     res.send('This is test')
 })
-
 
 
 // ----upload files----
@@ -63,6 +58,7 @@ app.get('/test', (req, res) => {
 //     console.log(req.files);
 //     res.send('testing files uploaded!')
 // })
+
 
 
 

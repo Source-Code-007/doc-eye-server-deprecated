@@ -1,6 +1,6 @@
 const singleUploader = require("../../utilities/singleUploader");
 
-function avatarHandler(req, res, next) {
+function avatarUpload(req, res, next) {
     const upload = singleUploader('./upload/avatar', ['image/png', 'image/jpg', 'image/jpeg'], 'Only .jpg, .jpeg and .png format allowed!')
 
     // Call the middleware function
@@ -13,4 +13,4 @@ function avatarHandler(req, res, next) {
     })
 }
 
-module.exports = avatarHandler
+module.exports = avatarUpload

@@ -5,7 +5,6 @@ function notFoundErr(req, res, next) {
 }
 
 function errorHandle(err, req, res, next) {
-    console.log(err, 8);
     if (err) {
         if (err instanceof multer.MulterError) {
             res.status(500).send({ errors: { multer: { message: 'There was a file upload related error!' } } })

@@ -41,7 +41,7 @@ doctorRouter.get('/all-doctors', async (req, res) => {
 
 // Get expected doctor 
 // TODO: [demo protected route]
-doctorRouter.get('/expected-doctor/:id', jwtVerify, async (req, res) => {
+doctorRouter.get('/expected-doctor/:id', async (req, res) => {
     try {
         const _id = req.params?.id
         const expectedDoctor = await Doctor.findById(_id).select({ __v: 0 })

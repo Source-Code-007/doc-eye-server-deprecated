@@ -12,7 +12,6 @@ function singleUploader(fileUploadDest, allowed_file_types, err_msg) {
         filename: (req, file, cb) => {
             const fileExt = path.extname(file.originalname)
             const modifiedName = `${file.originalname.replace(fileExt, '').toLowerCase().split(' ').join('-')}-${Date.now()}${fileExt}`
-            console.log(modifiedName);
             cb(null, modifiedName)
         }
     })
@@ -23,8 +22,6 @@ function singleUploader(fileUploadDest, allowed_file_types, err_msg) {
             fileSize: 1000000 // 1MB - By bytes
         },
         fileFilter: (req, file, callback) => {
-            console.log(file);
-            console.log(allowed_file_types, 'array');
             if(allowed_file_types.includes(file.mimetype)){
                 callback(null, true) // first param - error null, second param - permit true
             } else{
