@@ -6,20 +6,22 @@ const User = require('../models/Users')
 const avatarUpload = require('../middleware/multer/avatarUpload')
 const { unlink } = require('fs')
 const path = require('path');
+const jwtVerify = require('../middleware/jwtVerify')
+
 
 
 userRouter.post('/signup', avatarUpload, async (req, res) => {
     try {
-        const { name, email, password, role, avatar } = req.body
+        const { name, email, phone, password, role, avatar } = req.body
         const hashPass = await bcrypt.hash(password, 10) //Password encrypted using bcrypt
         const existUser = await User.findOne({ email: email })
 
 
+
         if (!existUser) {
             let newUser;
-            console.log(req?.files[0], 'files');
             if (req?.files[0]?.filename) {
-                newUser = new User({ name, email, avatar: req?.files[0]?.filename, password: hashPass, role })
+                newUser = new User({ name, email, phone, avatar: req?.files[0]?.filename, password: hashPass, role })
             } else {
                 newUser = new User({ name, email, password: hashPass, role })
             }
@@ -58,6 +60,7 @@ userRouter.post('/signup', avatarUpload, async (req, res) => {
 userRouter.post('/signin', async (req, res) => {
     try {
         const { email, password } = req.body
+
         const user = await User.findOne({ email: email }, { __v: 0 })
         if (user) {
             const isValidPass = await bcrypt.compare(password, user?.password) //Password decrypted using bcrypt
@@ -91,6 +94,24 @@ userRouter.get('/all-users', async (req, res) => {
             })
         } else {
             res.status(500).send({ message: 'Users not found!' })
+        }
+    } catch (e) {
+        res.status(500).send({ message: 'There was a server side error!' })
+    }
+})
+
+// Get profile 
+userRouter.get('/user-profile', jwtVerify, async (req, res) => {
+    try {
+        const email = req.email
+        const user = await User.findOne({email: email}, { __v: 0 })
+        if (user) {
+            res.status(200).send({
+                message: 'User found!',
+                data: user
+            })
+        } else {
+            res.status(500).send({ message: 'User not found!' })
         }
     } catch (e) {
         res.status(500).send({ message: 'There was a server side error!' })
