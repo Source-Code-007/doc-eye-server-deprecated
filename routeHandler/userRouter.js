@@ -7,47 +7,53 @@ const avatarUpload = require('../middleware/multer/avatarUpload')
 const { unlink } = require('fs')
 const path = require('path');
 const jwtVerify = require('../middleware/jwtVerify')
+const { addUserValidator, addUserValidatorHandler } = require('../middleware/validator/userValidator')
 
 
-
-userRouter.post('/signup', avatarUpload, async (req, res) => {
+userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
     try {
         const { name, email, phone, password, role, avatar } = req.body
         const hashPass = await bcrypt.hash(password, 10) //Password encrypted using bcrypt
         const existUser = await User.findOne({ email: email })
 
-
-
         if (!existUser) {
             let newUser;
-            if (req?.files[0]?.filename) {
-                newUser = new User({ name, email, phone, avatar: req?.files[0]?.filename, password: hashPass, role })
+            if (req.files?.length > 0) {
+                if (req?.files[0]?.filename) {
+                    newUser = new User({ name, email, phone, avatar: req?.files[0]?.filename, password: hashPass, role })
+                }
             } else {
-                newUser = new User({ name, email, password: hashPass, role })
+                newUser = new User({ name, email, password: hashPass, phone, role })
             }
             await newUser.save()
             if (newUser) {
                 res.status(200).send({ message: 'User created successfully' })
             } else {
                 // Remove the uploaded file
-                unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
-                    if (err) console.log(err?.message, 'error from remove file');
-                })
+                if (req.files?.length > 0) {
+                    unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
+                        if (err) console.log(err?.message, 'error from remove file');
+                    })
+                }
                 res.status(500).send({ message: 'There was a server side error' })
             }
         } else {
             // Remove the uploaded file
-            unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
-                if (err) console.log(err?.message, 'error from remove file');
-            })
+            if (req.files?.length > 0) {
+                unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
+                    if (err) console.log(err?.message, 'error from remove file');
+                })
+            }
             res.status(500).send({ message: 'This email has already been registered!' })
         }
 
     } catch (e) {
         // Remove the uploaded file
-        unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
-            if (err) console.log(err?.message, 'error from remove file');
-        })
+        if (req.files?.length > 0) {
+            unlink(path.join(__dirname, `../upload/avatar/${req.files[0]?.filename}`), err => {
+                if (err) console.log(err?.message, 'error from remove file');
+            })
+        }
 
         if (e?.message) {
             res.status(500).send({ message: e?.message })
@@ -65,7 +71,7 @@ userRouter.post('/signin', async (req, res) => {
         if (user) {
             const isValidPass = await bcrypt.compare(password, user?.password) //Password decrypted using bcrypt
             if (isValidPass) {
-                const jwtToken = jwt.sign({ email, _id: user?._id }, process.env.JWT_SECRET, { expiresIn: '1h' })
+                const jwtToken = jwt.sign({ email, _id: user?._id }, process.env.JWT_SECRET) //{ expiresIn: '10h' }
                 res.status(200).send({ message: 'Login successfully', token: jwtToken })
             } else {
                 res.status(500).send({ message: 'Authentication failed!' })
@@ -104,7 +110,7 @@ userRouter.get('/all-users', async (req, res) => {
 userRouter.get('/user-profile', jwtVerify, async (req, res) => {
     try {
         const email = req.email
-        const user = await User.findOne({email: email}, { __v: 0 })
+        const user = await User.findOne({ email: email }, { __v: 0 })
         if (user) {
             res.status(200).send({
                 message: 'User found!',

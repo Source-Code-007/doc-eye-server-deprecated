@@ -7,7 +7,8 @@ function avatarUpload(req, res, next) {
     upload.any()(req, res, err => {
         if (err) {
             console.log(err);
-            res.status(500).send({ errors: { avatar: { message: err.message } } })
+            // res.status(500).send({ errors: { avatar: { message: err.message } } })
+            res.status(500).send({ message: err.message })
         } else {
             next()
         }
