@@ -28,12 +28,12 @@ adminRouter.post('/add-specialty', jwtVerify, async(req, res) => {
     try{
         const newSpecialty = new Specialty({...req.body, admin:req.userId})
         await newSpecialty.save()
-        res.status(200).send({message: `Specialty inserted successfully!`, _id: newSpecialty?._id})
+        res.status(200).send({msg: `Specialty inserted successfully!`, _id: newSpecialty?._id})
     }catch(e){
         if(e?.message){
-            return res.status(500).send({message: e?.message})
+            return res.status(500).send({ errors: { common: { msg: e?.message } } })
           } 
-          res.status(500).send({message: "There was a server side error!"})
+          return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
 })
 
@@ -44,12 +44,12 @@ adminRouter.get('/specialties', async(req, res)=> {
         if(specialties){
           return res.status(200).send(specialties)
         } 
-        res.status(500).send({ message: 'Specialties not found!' })
+        res.status(500).send({ msg: 'Specialties not found!' })
     }catch(e){
         if(e?.message){
-          return res.status(500).send({message: e?.message})
+          return res.status(500).send({ errors: { common: { msg: e?.message } } })
         } 
-        res.status(500).send({message: "There was a server side error!"})
+        return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
 })
 

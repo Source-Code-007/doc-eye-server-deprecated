@@ -35,7 +35,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
                         if (err) console.log(err?.message, 'error from remove file');
                     })
                 }
-                res.status(500).send({ message: 'There was a server side error' })
+                res.status(500).send({ errors: { common: { msg: 'There was a server side error' } } })
             }
         } else {
             // Remove the uploaded file
@@ -44,7 +44,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
                     if (err) console.log(err?.message, 'error from remove file');
                 })
             }
-            res.status(500).send({ message: 'This email has already been registered!' })
+            res.status(500).send({ errors: { common: { msg: 'This email has already been registered!' } } })
         }
 
     } catch (e) {
@@ -56,9 +56,9 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
         }
 
         if (e?.message) {
-            res.status(500).send({ message: e?.message })
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
         } else {
-            res.status(500).send({ message: `There was a server side error` })
+            res.status(500).send({ errors: { common: { msg: `There was a server side error` } } })
         }
     }
 })
@@ -74,17 +74,17 @@ userRouter.post('/signin', async (req, res) => {
                 const jwtToken = jwt.sign({ email, _id: user?._id }, process.env.JWT_SECRET) //{ expiresIn: '10h' }
                 res.status(200).send({ message: 'Login successfully', token: jwtToken })
             } else {
-                res.status(500).send({ message: 'Authentication failed!' })
+                res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
             }
         }
         else {
-            res.status(500).send({ message: 'Authentication failed!' })
+            res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
         }
     } catch (e) {
         if (e?.message) {
-            res.status(500).send({ message: e?.message })
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
         } else {
-            res.status(500).send({ message: `Authentication failed!` })
+            res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
         }
     }
 })
@@ -99,10 +99,10 @@ userRouter.get('/all-users', async (req, res) => {
                 data: users
             })
         } else {
-            res.status(500).send({ message: 'Users not found!' })
+            res.status(500).send({ errors: { common: { msg: 'Users not found!' } } })
         }
     } catch (e) {
-        res.status(500).send({ message: 'There was a server side error!' })
+        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
 })
 
@@ -117,10 +117,10 @@ userRouter.get('/user-profile', jwtVerify, async (req, res) => {
                 data: user
             })
         } else {
-            res.status(500).send({ message: 'User not found!' })
+            res.status(500).send({ errors: { common: { msg: 'User not found!' } } })
         }
     } catch (e) {
-        res.status(500).send({ message: 'There was a server side error!' })
+        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
 })
 
