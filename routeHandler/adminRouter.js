@@ -31,8 +31,24 @@ adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addS
     try{
         const newSpecialty = new Specialty({...req.body, admin:req.userId})
         await newSpecialty.save()
-        res.status(200).send({msg: `Specialty inserted successfully!`, _id: newSpecialty?._id})
+        if(newSpecialty){
+            res.status(200).send({msg: `Specialty inserted successfully!`, _id: newSpecialty?._id})
+        }else {
+         // Remove the uploaded file
+         if (req.files?.length > 0) {
+            unlink(path.join(__dirname, `../../upload/specialty/${req.files[0]?.filename}`), err => {
+                if (err) console.log(err?.message, 'error from remove file');
+            })
+        }
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error' } } })
+        }
     }catch(e){
+          // Remove the uploaded file
+          if (req.files?.length > 0) {
+            unlink(path.join(__dirname, `../../upload/specialty/${req.files[0]?.filename}`), err => {
+                if (err) console.log(err?.message, 'error from remove file');
+            })
+        }
         if(e?.message){
             return res.status(500).send({ errors: { common: { msg: e?.message } } })
           } 

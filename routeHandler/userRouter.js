@@ -8,6 +8,7 @@ const { unlink } = require('fs')
 const path = require('path');
 const jwtVerify = require('../middleware/authGuard/jwtVerify')
 const { addUserValidator, addUserValidatorHandler } = require('../middleware/validator/userValidator')
+const createError = require('http-errors')
 
 
 userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
@@ -35,7 +36,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
                         if (err) console.log(err?.message, 'error from remove file');
                     })
                 }
-                res.status(500).send({ errors: { common: { msg: 'There was a server side error' } } })
+                throw createError('There was a server side error')
             }
         } else {
             // Remove the uploaded file
@@ -44,7 +45,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
                     if (err) console.log(err?.message, 'error from remove file');
                 })
             }
-            res.status(500).send({ errors: { common: { msg: 'This email has already been registered!' } } })
+            throw createError('There was a server side error')
         }
 
     } catch (e) {
@@ -68,21 +69,21 @@ userRouter.post('/signin', async (req, res) => {
         const { username, password } = req.body
 
         const user = await User.findOne({
-            $or:[{ email: username }, { phone: username }]
+            $or: [{ email: username }, { phone: username }]
         })
 
-        
+
         if (user) {
             const isValidPass = await bcrypt.compare(password, user?.password) //Password decrypted using bcrypt
             if (isValidPass) {
-                const jwtToken = jwt.sign({ username, _id: user?._id }, process.env.JWT_SECRET) //{ expiresIn: '10h' }
+                const jwtToken = jwt.sign({ username, _id: user?._id }, process.env.JWT_SECRET, { expiresIn: process.env.JWT_EXPIRES })
                 res.status(200).send({ message: 'Login successfully', token: jwtToken })
             } else {
-                res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
+                throw createError('Authentication failed!')
             }
         }
         else {
-            res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
+            throw createError('Authentication failed!')
         }
     } catch (e) {
         if (e?.message) {
@@ -103,10 +104,14 @@ userRouter.get('/all-users', async (req, res) => {
                 data: users
             })
         } else {
-            res.status(500).send({ errors: { common: { msg: 'Users not found!' } } })
+            throw createError('Users not found!')
         }
     } catch (e) {
-        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        if (e?.message) {
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
+        } else {
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        }
     }
 })
 
@@ -114,26 +119,51 @@ userRouter.get('/all-users', async (req, res) => {
 userRouter.get('/user-profile', jwtVerify, async (req, res) => {
     try {
         const username = req.username
-        const user = await User.findOne({$or:[{ email: username }, {phone: username}]}, { __v: 0 })
+        const user = await User.findOne({ $or: [{ email: username }, { phone: username }] }, { __v: 0 })
         if (user) {
             res.status(200).send({
                 message: 'User found!',
                 data: user
             })
         } else {
-            res.status(500).send({ errors: { common: { msg: 'User not found!' } } })
+            throw createError('User not found!')
         }
     } catch (e) {
-        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        if (e?.message) {
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
+        } else {
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        }
     }
 })
 
 // TODO: remove avatar after remove user
 userRouter.delete('/delete-user/:id', async (req, res) => {
-
     const id = req?.params.id
-    console.log(id);
-    res.send(id)
+    try {
+        const deletedUser = await User.findByIdAndDelete(id)
+        if (deletedUser) {
+            console.log(deletedUser, 'deletedUser');
+            // Remove the uploaded file
+            if(deletedUser?.avatar){
+                unlink(path.join(__dirname, `../upload/avatar/${deletedUser?.avatar}`), err => {
+                    if (err) console.log(err?.message, 'error from remove file');
+                })
+            }
+
+            res.status(200).send({
+                message: 'User deleted successfully!',
+            })
+        } else {
+            throw createError('User not found to delete')
+        }
+    } catch (e) {
+        if (e?.message) {
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
+        } else {
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        }
+    }
 
 
     // Delete avatar after remove user
