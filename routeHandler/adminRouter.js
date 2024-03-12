@@ -27,47 +27,53 @@ adminRouter.get('/', (req, res) => {
 })
 
 // Insert specialty
-adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async(req, res) => {
-    try{
-        const newSpecialty = new Specialty({...req.body, admin:req.userId})
+adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+    try {
+        const {specialtyName, specialtyDescription, specialtyLogo} = req.body
+        let newSpecialty
+        if (req?.files?.length > 0) {
+            newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/specialty/${req?.files[0]?.filename}`, admin: req.userId })
+        } else {
+            newSpecialty = new Specialty({specialtyName, specialtyDescription})
+        }
         await newSpecialty.save()
-        if(newSpecialty){
-            res.status(200).send({msg: `Specialty inserted successfully!`, _id: newSpecialty?._id})
-        }else {
-         // Remove the uploaded file
-         if (req.files?.length > 0) {
-            unlink(path.join(__dirname, `../../upload/specialty/${req.files[0]?.filename}`), err => {
+        if (newSpecialty) {
+            res.status(200).send({ msg: `Specialty inserted successfully!`, _id: newSpecialty?._id })
+        } else {
+            // Remove the uploaded file
+            if (req.files?.length > 0) {
+                unlink(path.join(__dirname, `../upload/specialty/${req.files[0]?.filename}`), err => {
+                    if (err) console.log(err?.message, 'error from specialty remove file');
+                })
+            }
+            throw createError('There was a server side error')
+        }
+    } catch (e) {
+        // Remove the uploaded file
+        if (req.files?.length > 0) {
+            unlink(path.join(__dirname, `../upload/specialty/${req.files[0]?.filename}`), err => {
                 if (err) console.log(err?.message, 'error from remove file');
             })
         }
-            res.status(500).send({ errors: { common: { msg: 'There was a server side error' } } })
-        }
-    }catch(e){
-          // Remove the uploaded file
-          if (req.files?.length > 0) {
-            unlink(path.join(__dirname, `../../upload/specialty/${req.files[0]?.filename}`), err => {
-                if (err) console.log(err?.message, 'error from remove file');
-            })
-        }
-        if(e?.message){
+        if (e?.message) {
             return res.status(500).send({ errors: { common: { msg: e?.message } } })
-          } 
-          return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
+        }
+        return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
 })
 
 // Get specialties
-adminRouter.get('/specialties', async(req, res)=> {
-    try{
-        const specialties = await Specialty.find({}, {__v:0}).populate("admin", "name email -_id")
-        if(specialties){
-          return res.status(200).send(specialties)
-        } 
+adminRouter.get('/specialties', async (req, res) => {
+    try {
+        const specialties = await Specialty.find({}, { __v: 0 }).populate("admin", "name email -_id")
+        if (specialties) {
+            return res.status(200).send(specialties)
+        }
         res.status(500).send({ msg: 'Specialties not found!' })
-    }catch(e){
-        if(e?.message){
-          return res.status(500).send({ errors: { common: { msg: e?.message } } })
-        } 
+    } catch (e) {
+        if (e?.message) {
+            return res.status(500).send({ errors: { common: { msg: e?.message } } })
+        }
         return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
 })

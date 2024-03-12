@@ -12,6 +12,7 @@ const createError = require('http-errors')
 const adminVerify = require('../middleware/authGuard/adminVerify')
 
 
+
 userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
     try {
         const { name, email, phone, password, role, avatar } = req.body
@@ -22,7 +23,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             let newUser;
             if (req.files?.length > 0) {
                 if (req?.files[0]?.filename) {
-                    newUser = new User({ name, email, phone, avatar: `${process.env}/avatar/${req?.files[0]?.filename}`, password: hashPass, role })
+                    newUser = new User({ name, email, phone, avatar: `${process.env.SERVER_BASE_URL}/avatar/${req?.files[0]?.filename}`, password: hashPass, role })
                 }
             } else {
                 newUser = new User({ name, email, password: hashPass, phone, role })
