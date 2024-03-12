@@ -8,10 +8,10 @@ const adminVerify = async (req, res, next) => {
         if (isAdmin) {
             next()
         } else {
-            next(`Authentication failure!`)
+            next(`Admin verify failure!`)
         }
     } catch (e) {
-        next(`Authentication failure!`)
+        next(`Admin verify failure!`)
     }
 }
 

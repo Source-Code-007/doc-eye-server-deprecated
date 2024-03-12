@@ -9,6 +9,7 @@ const path = require('path');
 const jwtVerify = require('../middleware/authGuard/jwtVerify')
 const { addUserValidator, addUserValidatorHandler } = require('../middleware/validator/userValidator')
 const createError = require('http-errors')
+const adminVerify = require('../middleware/authGuard/adminVerify')
 
 
 userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
@@ -138,19 +139,17 @@ userRouter.get('/user-profile', jwtVerify, async (req, res) => {
 })
 
 // TODO: remove avatar after remove user
-userRouter.delete('/delete-user/:id', async (req, res) => {
+userRouter.delete('/delete-user/:id', jwtVerify, adminVerify, async (req, res) => {
     const id = req?.params.id
     try {
         const deletedUser = await User.findByIdAndDelete(id)
         if (deletedUser) {
-            console.log(deletedUser, 'deletedUser');
             // Remove the uploaded file
             if(deletedUser?.avatar){
                 unlink(path.join(__dirname, `../upload/avatar/${deletedUser?.avatar}`), err => {
                     if (err) console.log(err?.message, 'error from remove file');
                 })
             }
-
             res.status(200).send({
                 message: 'User deleted successfully!',
             })

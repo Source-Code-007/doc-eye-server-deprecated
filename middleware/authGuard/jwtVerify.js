@@ -4,7 +4,7 @@ const jwtVerify = async (req, res, next) => {
         const { authorization } = req?.headers
         const jwtToken = authorization?.split(' ')[1]
         if (!jwtToken) {
-            return res.status(401).send({ message: "Unauthorized user!" })
+            return res.status(401).send({ errors: { common: { msg: 'Unauthorized user!' } } })
         }
         const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET)
         const { username, _id } = decoded
