@@ -1,9 +1,12 @@
 const express = require('express');
 const adminRouter = express.Router()
-const jwtVerify = require('../middleware/jwtVerify');
+const jwtVerify = require('../middleware/authGuard/jwtVerify');
+const specialtyUpload = require('../middleware/multer/specialtyUpload');
 
 // Model
 const Specialty = require('../models/Specialty');
+const { addSpecialtyValidator, addSpecialtyValidatorHandler } = require('../middleware/validator/specialtyValidator');
+const adminVerify = require('../middleware/authGuard/adminVerify');
 
 // Testing middleware
 const adminLogger = (req, res, next) => {
@@ -24,7 +27,7 @@ adminRouter.get('/', (req, res) => {
 })
 
 // Insert specialty
-adminRouter.post('/add-specialty', jwtVerify, async(req, res) => {
+adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async(req, res) => {
     try{
         const newSpecialty = new Specialty({...req.body, admin:req.userId})
         await newSpecialty.save()

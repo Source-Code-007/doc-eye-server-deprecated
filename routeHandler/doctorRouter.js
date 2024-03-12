@@ -1,6 +1,6 @@
 const express = require('express')
 const doctorRouter = express.Router('')
-const jwtVerify = require('../middleware/jwtVerify')
+const jwtVerify = require('../middleware/authGuard/jwtVerify')
 const Doctor = require('../models/Doctors')
 
 

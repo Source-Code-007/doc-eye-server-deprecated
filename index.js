@@ -2,6 +2,7 @@
 const express = require('express');
 const mongoose = require('mongoose')
 const cors = require('cors')
+const path = require('path')
 const app = express()
 
 
@@ -10,7 +11,6 @@ const adminRouter = require('./routeHandler/adminRouter')
 const doctorRouter = require('./routeHandler/doctorRouter')
 const userRouter = require('./routeHandler/userRouter');
 const {notFoundErr, errorHandle} = require('./middleware/common/errorHandler')
-
 
 
 const port = process.env.PORT || 4000
@@ -22,6 +22,7 @@ app.use(express.json())
 app.use('/', userRouter)
 app.use('/admin', adminRouter) // using sub app for admin router
 app.use('/doctor', doctorRouter) // using sub app for doctor router
+app.use('/avatar', express.static(path.join(__dirname, './upload/avatar'))) // set upload to static file 
 
 
 // database connection with mongoose

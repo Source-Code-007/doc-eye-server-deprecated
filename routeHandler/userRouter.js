@@ -6,7 +6,7 @@ const User = require('../models/Users')
 const avatarUpload = require('../middleware/multer/avatarUpload')
 const { unlink } = require('fs')
 const path = require('path');
-const jwtVerify = require('../middleware/jwtVerify')
+const jwtVerify = require('../middleware/authGuard/jwtVerify')
 const { addUserValidator, addUserValidatorHandler } = require('../middleware/validator/userValidator')
 
 
@@ -20,7 +20,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             let newUser;
             if (req.files?.length > 0) {
                 if (req?.files[0]?.filename) {
-                    newUser = new User({ name, email, phone, avatar: req?.files[0]?.filename, password: hashPass, role })
+                    newUser = new User({ name, email, phone, avatar: `${process.env}/avatar/${req?.files[0]?.filename}`, password: hashPass, role })
                 }
             } else {
                 newUser = new User({ name, email, password: hashPass, phone, role })
@@ -65,13 +65,17 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
 
 userRouter.post('/signin', async (req, res) => {
     try {
-        const { email, password } = req.body
+        const { username, password } = req.body
 
-        const user = await User.findOne({ email: email }, { __v: 0 })
+        const user = await User.findOne({
+            $or:[{ email: username }, { phone: username }]
+        })
+
+        
         if (user) {
             const isValidPass = await bcrypt.compare(password, user?.password) //Password decrypted using bcrypt
             if (isValidPass) {
-                const jwtToken = jwt.sign({ email, _id: user?._id }, process.env.JWT_SECRET) //{ expiresIn: '10h' }
+                const jwtToken = jwt.sign({ username, _id: user?._id }, process.env.JWT_SECRET) //{ expiresIn: '10h' }
                 res.status(200).send({ message: 'Login successfully', token: jwtToken })
             } else {
                 res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
@@ -109,8 +113,8 @@ userRouter.get('/all-users', async (req, res) => {
 // Get profile 
 userRouter.get('/user-profile', jwtVerify, async (req, res) => {
     try {
-        const email = req.email
-        const user = await User.findOne({ email: email }, { __v: 0 })
+        const username = req.username
+        const user = await User.findOne({$or:[{ email: username }, {phone: username}]}, { __v: 0 })
         if (user) {
             res.status(200).send({
                 message: 'User found!',
@@ -125,7 +129,11 @@ userRouter.get('/user-profile', jwtVerify, async (req, res) => {
 })
 
 // TODO: remove avatar after remove user
-userRouter.delete('/delete-user', async (req, res) => {
+userRouter.delete('/delete-user/:id', async (req, res) => {
+
+    const id = req?.params.id
+    console.log(id);
+    res.send(id)
 
 
     // Delete avatar after remove user

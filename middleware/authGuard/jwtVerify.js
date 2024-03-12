@@ -7,9 +7,9 @@ const jwtVerify = async (req, res, next) => {
             return res.status(401).send({ message: "Unauthorized user!" })
         }
         const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET)
-        const { email, _id } = decoded
+        const { username, _id } = decoded
 
-        req.email = email
+        req.username = username
         req.userId = _id
         next()
     } catch (e) {
