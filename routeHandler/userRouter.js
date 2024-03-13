@@ -14,6 +14,7 @@ const adminVerify = require('../middleware/authGuard/adminVerify')
 
 
 userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
+
     try {
         const { name, email, phone, password, role, avatar } = req.body
         const hashPass = await bcrypt.hash(password, 10) //Password encrypted using bcrypt

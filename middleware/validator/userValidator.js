@@ -41,7 +41,7 @@ const addUserValidatorHandler = (req, res, next) => {
     if (Object.keys(mappedErrors).length === 0) {
         next()
     } else {
-        console.log(mappedErrors, 45);
+        console.log(mappedErrors, 'user error by express validator');
 
         // Remove the uploaded file
         if (req.files?.length > 0) {
