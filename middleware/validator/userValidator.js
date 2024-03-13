@@ -7,6 +7,8 @@ const { unlink } = require("fs");
 const addUserValidator = [
     check('name').isLength({ min: 1 }).withMessage('Name is required!').isAlpha("en-US", { ignore: " -" }).withMessage('Name must not contain anything other than alphabet').trim(),
 
+    check('gender').isIn(['male', 'female', 'other']).withMessage('Invalid gender. Only male, female and other is allowed.'),
+
     check('password').isStrongPassword({ minLength: 8, minLowercase: 1, minUppercase: 1, minNumbers: 1 }).withMessage('Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit'),
 
     check('email').isEmail().withMessage('Invalid email address!').custom(async (value) => {

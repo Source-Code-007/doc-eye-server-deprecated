@@ -16,7 +16,7 @@ const adminVerify = require('../middleware/authGuard/adminVerify')
 userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
 
     try {
-        const { name, email, phone, password, role, avatar } = req.body
+        const { name, email, gender, phone, password, role, avatar } = req.body
         const hashPass = await bcrypt.hash(password, 10) //Password encrypted using bcrypt
         const existUser = await User.findOne({ email: email })
 
@@ -24,10 +24,10 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             let newUser;
             if (req.files?.length > 0) {
                 if (req?.files[0]?.filename) {
-                    newUser = new User({ name, email, phone, avatar: `${process.env.SERVER_BASE_URL}/avatar/${req?.files[0]?.filename}`, password: hashPass, role })
+                    newUser = new User({ ...req.body, avatar: `${process.env.SERVER_BASE_URL}/avatar/${req?.files[0]?.filename}`, password: hashPass })
                 }
             } else {
-                newUser = new User({ name, email, password: hashPass, phone, role })
+                newUser = new User({ ...req.body, password: hashPass })
             }
             await newUser.save()
             if (newUser) {
