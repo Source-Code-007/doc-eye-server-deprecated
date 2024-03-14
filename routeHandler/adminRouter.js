@@ -28,13 +28,15 @@ adminRouter.get('/', (req, res) => {
 
 // Insert specialty
 adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+
+    console.log('fired add specialty');
     try {
         const {specialtyName, specialtyDescription, specialtyLogo} = req.body
         let newSpecialty
         if (req?.files?.length > 0) {
             newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/specialty/${req?.files[0]?.filename}`, admin: req.userId })
         } else {
-            newSpecialty = new Specialty({specialtyName, specialtyDescription})
+            newSpecialty = new Specialty({...req.body})
         }
         await newSpecialty.save()
         if (newSpecialty) {
@@ -49,16 +51,19 @@ adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addS
             throw createError('There was a server side error')
         }
     } catch (e) {
+
+        console.log(e, 'err form  add specialty');
         // Remove the uploaded file
         if (req.files?.length > 0) {
             unlink(path.join(__dirname, `../upload/specialty/${req.files[0]?.filename}`), err => {
                 if (err) console.log(err?.message, 'error from remove file');
             })
         }
-        if (e?.message) {
-            return res.status(500).send({ errors: { common: { msg: e?.message } } })
+        if (e) {
+            return res.status(500).send({ errors: { common: { msg: e } } })
+        } else{
+            return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
         }
-        return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
 })
 

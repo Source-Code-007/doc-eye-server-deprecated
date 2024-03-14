@@ -2,10 +2,11 @@ const { check, validationResult } = require("express-validator");
 
 const addSpecialtyValidator = [
     check('specialtyName').isLength({ min: 1 }).withMessage('Specialty name is required!'),
-    check('specialtyDescription').isLength({ min: 1 }).withMessage('Specialty description is required!'),
+    check('specialtyDescription').isLength({ min: 1, max: 110 }).withMessage('Specialty description must be between 1 and 110 characters long!'),
     check('specialtyLogo').custom((value, { req }) => {
-        return /\.(jpg|jpeg|png|gif)$/i.test(value);
-    }).withMessage('Please only submit pdf documents.'),
+        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(req.files?.[0]?.mimetype)
+        // /\.(jpg|jpeg|png|gif)$/i.test(req.files?.[0]?.mimetype);
+    }).withMessage('Please submit only JPG, JPEG, PNG, or GIF image file.'),
 ]
 
 const addSpecialtyValidatorHandler = (req, res, next) => {
