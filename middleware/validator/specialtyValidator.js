@@ -4,9 +4,9 @@ const addSpecialtyValidator = [
     check('specialtyName').isLength({ min: 1 }).withMessage('Specialty name is required!'),
     check('specialtyDescription').isLength({ min: 1, max: 110 }).withMessage('Specialty description must be between 1 and 110 characters long!'),
     check('specialtyLogo').custom((value, { req }) => {
-        return ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'].includes(req.files?.[0]?.mimetype)
+        return ['image/jpeg', 'image/jpg', 'image/png'].includes(req.files?.[0]?.mimetype)
         // /\.(jpg|jpeg|png|gif)$/i.test(req.files?.[0]?.mimetype);
-    }).withMessage('Please submit only JPG, JPEG, PNG, or GIF image file.'),
+    }).withMessage('Please submit JPG, JPEG or PNG image file.'),
 ]
 
 const addSpecialtyValidatorHandler = (req, res, next) => {

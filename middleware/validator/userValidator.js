@@ -22,6 +22,11 @@ const addUserValidator = [
         }
     }),
 
+    check('avatar').custom((value, { req }) => {
+        return ['image/jpeg', 'image/jpg', 'image/png'].includes(req.files?.[0]?.mimetype)
+        // /\.(jpg|jpeg|png|gif)$/i.test(req.files?.[0]?.mimetype);
+    }).withMessage('Please submit JPG, JPEG or PNG image file.'),
+
     check('phone').isMobilePhone("bn-BD").withMessage('Mobile number must be a valid Bangladeshi mobile number').custom(async (value) => {
         try {
             const isExistPhone = await User.findOne({ phone: value })

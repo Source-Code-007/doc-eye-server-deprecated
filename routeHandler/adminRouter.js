@@ -29,7 +29,6 @@ adminRouter.get('/', (req, res) => {
 // Insert specialty
 adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
 
-    console.log('fired add specialty');
     try {
         const {specialtyName, specialtyDescription, specialtyLogo} = req.body
         let newSpecialty
