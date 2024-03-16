@@ -1,12 +1,12 @@
 const express = require('express');
 const adminRouter = express.Router()
 const jwtVerify = require('../middleware/authGuard/jwtVerify');
-const specialtyUpload = require('../middleware/multer/specialtyUpload');
 
 // Model
 const Specialty = require('../models/Specialty');
 const { addSpecialtyValidator, addSpecialtyValidatorHandler } = require('../middleware/validator/specialtyValidator');
 const adminVerify = require('../middleware/authGuard/adminVerify');
+const specialtyUpload = require('../middleware/multer/specialtyUpload');
 
 // Testing middleware
 const adminLogger = (req, res, next) => {
@@ -73,7 +73,7 @@ adminRouter.get('/specialties', async (req, res) => {
         if (specialties) {
             return res.status(200).send(specialties)
         }
-        res.status(500).send({ msg: 'Specialties not found!' })
+        return res.status(500).send({ errors: { common: { msg: 'Specialties not found!' } } })
     } catch (e) {
         if (e?.message) {
             return res.status(500).send({ errors: { common: { msg: e?.message } } })
