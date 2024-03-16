@@ -33,7 +33,7 @@ adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addS
         const {specialtyName, specialtyDescription, specialtyLogo} = req.body
         let newSpecialty
         if (req?.files?.length > 0) {
-            newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/specialty/${req?.files[0]?.filename}`, admin: req.userId })
+            newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req?.files[0]?.filename}`, admin: req.userId })
         } else {
             newSpecialty = new Specialty({...req.body})
         }

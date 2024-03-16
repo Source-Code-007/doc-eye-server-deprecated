@@ -22,7 +22,8 @@ app.use(express.json())
 app.use('/', userRouter)
 app.use('/admin', adminRouter) // using sub app for admin router
 app.use('/doctor', doctorRouter) // using sub app for doctor router
-app.use('/avatar', express.static(path.join(__dirname, './upload/avatar'))) // set upload to static file 
+app.use('/', express.static(path.join(__dirname, './upload/avatar'))) // set avatar to static file 
+app.use('/', express.static(path.join(__dirname, './upload/specialty'))) // set specialty to static file 
 
 
 // database connection with mongoose

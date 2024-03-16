@@ -24,7 +24,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             let newUser;
             if (req.files?.length > 0) {
                 if (req?.files[0]?.filename) {
-                    newUser = new User({ ...req.body, avatar: `${process.env.SERVER_BASE_URL}/avatar/${req?.files[0]?.filename}`, password: hashPass })
+                    newUser = new User({ ...req.body, avatar: `${process.env.SERVER_BASE_URL}/${req?.files[0]?.filename}`, password: hashPass })
                 }
             } else {
                 newUser = new User({ ...req.body, password: hashPass })
