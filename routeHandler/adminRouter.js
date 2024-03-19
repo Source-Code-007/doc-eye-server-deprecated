@@ -1,6 +1,9 @@
 const express = require('express');
 const adminRouter = express.Router()
 const jwtVerify = require('../middleware/authGuard/jwtVerify');
+const createError = require('http-errors')
+const { unlink } = require('fs')
+const path = require('path')
 
 // Model
 const Specialty = require('../models/Specialty');
@@ -27,15 +30,15 @@ adminRouter.get('/', (req, res) => {
 })
 
 // Insert specialty
-adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+adminRouter.post('/add-specialty', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
 
     try {
-        const {specialtyName, specialtyDescription, specialtyLogo} = req.body
+        const { specialtyName, specialtyDescription, specialtyLogo } = req.body
         let newSpecialty
         if (req?.files?.length > 0) {
             newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req?.files[0]?.filename}`, admin: req.userId })
         } else {
-            newSpecialty = new Specialty({...req.body})
+            newSpecialty = new Specialty({ ...req.body })
         }
         await newSpecialty.save()
         if (newSpecialty) {
@@ -60,11 +63,12 @@ adminRouter.post('/add-specialty', jwtVerify, adminVerify, specialtyUpload, addS
         }
         if (e) {
             return res.status(500).send({ errors: { common: { msg: e } } })
-        } else{
+        } else {
             return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
         }
     }
 })
+
 
 // Get specialties
 adminRouter.get('/specialties', async (req, res) => {
@@ -80,6 +84,71 @@ adminRouter.get('/specialties', async (req, res) => {
         }
         return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
+})
+
+// Update specialties
+adminRouter.patch('/update-specialty/:id', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+    const id = req.params?.id
+    const receivedData = req.body
+    let updatedData
+
+    try {
+        if (req.files?.length > 0) {
+            updatedData = { ...receivedData, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req.files?.[0]?.filename}` }
+        } else {
+            updatedData = { ...receivedData }
+        }
+        const updatedSpecialty = await Specialty.findByIdAndUpdate(id, updatedData)
+        if (updatedSpecialty) {
+
+            // Deleted prev file from server
+            if (updatedSpecialty?.specialtyLogo && req.files?.length > 0) {
+                const fileName = updatedSpecialty?.specialtyLogo.split('/').at(-1)
+                unlink(path.join(__dirname, `../upload/specialty/${fileName}`), err => {
+                    if (err) console.log(err?.message, 'error from remove file');
+                })
+            }
+            res.status(200).send({ message: 'Specialty updated', id: updatedSpecialty?._id })
+        } else {
+            throw createError('Specialty not found to update')
+        }
+    } catch (e) {
+        if (e?.message) {
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
+        } else {
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        }
+    }
+
+})
+
+// Delete specialties
+adminRouter.delete('/delete-specialty/:id', async (req, res) => {
+    const id = req.params?.id
+    try {
+        const deleteSpecialty = await Specialty.findByIdAndDelete(id)
+        if (deleteSpecialty) {
+            // Remove the uploaded file
+            if (deleteSpecialty?.specialtyLogo) {
+                const fileName = deleteSpecialty?.specialtyLogo.split('/').at(-1)
+                unlink(path.join(__dirname, `../upload/specialty/${fileName}`), err => {
+                    if (err) console.log(err?.message, 'error from remove file');
+                })
+            }
+            res.status(200).send({
+                message: 'Specialty deleted successfully'
+            })
+        } else {
+            throw createError('Specialty not found to delete')
+        }
+    } catch (e) {
+        if (e?.message) {
+            res.status(500).send({ errors: { common: { msg: e?.message } } })
+        } else {
+            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        }
+    }
+
 })
 
 adminRouter.get('/pending-doctors', (req, res) => {

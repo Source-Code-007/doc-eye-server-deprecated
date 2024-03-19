@@ -31,7 +31,7 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             }
             await newUser.save()
             if (newUser) {
-                res.status(200).send({ message: 'User created successfully' })
+                res.status(200).send({ message: 'User created successfully', _id: newUser?._id })
             } else {
                 // Remove the uploaded file
                 if (req.files?.length > 0) {
@@ -142,13 +142,14 @@ userRouter.get('/user-profile', jwtVerify, async (req, res) => {
 
 // TODO: remove avatar after remove user
 userRouter.delete('/delete-user/:id', jwtVerify, adminVerify, async (req, res) => {
-    const id = req?.params.id
+    const id = req.params?.id
     try {
         const deletedUser = await User.findByIdAndDelete(id)
         if (deletedUser) {
             // Remove the uploaded file
-            if(deletedUser?.avatar){
-                unlink(path.join(__dirname, `../upload/avatar/${deletedUser?.avatar}`), err => {
+            if (deletedUser?.avatar) {
+                const fileName = deletedUser?.avatar.split('/').at(-1)
+                unlink(path.join(__dirname, `../upload/avatar/${fileName}`), err => {
                     if (err) console.log(err?.message, 'error from remove file');
                 })
             }
@@ -166,13 +167,6 @@ userRouter.delete('/delete-user/:id', jwtVerify, adminVerify, async (req, res) =
         }
     }
 
-
-    // Delete avatar after remove user
-    // if(user.avatar){
-    //     unlink(path.join(__dirname, `upload/avatar/${user.avatar}`), err=> {
-    //         if(err) console.log(err?.message);
-    //     })
-    // }
 
 })
 
