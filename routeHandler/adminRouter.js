@@ -34,6 +34,7 @@ adminRouter.post('/add-specialty', specialtyUpload, addSpecialtyValidator, addSp
 
     try {
         const { specialtyName, specialtyDescription, specialtyLogo } = req.body
+
         let newSpecialty
         if (req?.files?.length > 0) {
             newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req?.files[0]?.filename}`, admin: req.userId })
@@ -92,11 +93,13 @@ adminRouter.patch('/update-specialty/:id', specialtyUpload, addSpecialtyValidato
     const receivedData = req.body
     let updatedData
 
+    console.log(receivedData, 'receivedData');
+
     try {
         if (req.files?.length > 0) {
             updatedData = { ...receivedData, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req.files?.[0]?.filename}` }
         } else {
-            updatedData = { ...receivedData }
+            updatedData = { ...receivedData, specialtyLogo: req.body?.specialtyLogo }
         }
         const updatedSpecialty = await Specialty.findByIdAndUpdate(id, updatedData)
         if (updatedSpecialty) {

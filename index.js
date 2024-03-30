@@ -14,7 +14,7 @@ const userRouter = require('./routeHandler/userRouter');
 const {notFoundErr, errorHandle} = require('./middleware/common/errorHandler')
 
 
-const port = process.env.PORT || 4000
+const port = process.env.PORT || 5000
 require('dotenv').config()
 
 
