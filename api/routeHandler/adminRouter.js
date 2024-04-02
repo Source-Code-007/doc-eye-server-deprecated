@@ -1,15 +1,12 @@
 const express = require('express');
 const adminRouter = express.Router()
-const jwtVerify = require('../../middleware/authGuard/jwtVerify');
-const createError = require('http-errors')
-const { unlink } = require('fs')
-const path = require('path')
+
+const jwtVerify = require('../../middleware/authGuard/jwtVerify')
 
 // Model
-const { addSpecialtyValidator, addSpecialtyValidatorHandler } = require('../../middleware/validator/specialtyValidator');
-const adminVerify = require('../../middleware/authGuard/adminVerify');
+const { addSpecialtyValidator, addSpecialtyValidatorHandler, updateSpecialtyValidator } = require('../../middleware/validator/specialtyValidator');
 const specialtyUpload = require('../../middleware/multer/specialtyUpload');
-const { addSpecialtyController, getSpecialtyController, updateSpecialtyController, deleteSpecialtyController } = require('../controllers/adminController');
+const { addSpecialtyController, getSpecialtiesController, updateSpecialtyController, deleteSpecialtyController } = require('../controllers/adminController');
 
 // Testing middleware
 const adminLogger = (req, res, next) => {
@@ -30,14 +27,14 @@ adminRouter.get('/', (req, res) => {
 })
 
 // Insert specialty
-adminRouter.post('/add-specialty', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, addSpecialtyController)
+adminRouter.post('/add-specialty', jwtVerify, specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, addSpecialtyController)
 
 
 // Get specialties
-adminRouter.get('/specialties', getSpecialtyController)
+adminRouter.get('/specialties', getSpecialtiesController)
 
 // Update specialties
-adminRouter.patch('/update-specialty/:id', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, updateSpecialtyController)
+adminRouter.patch('/update-specialty/:id', specialtyUpload, updateSpecialtyValidator, addSpecialtyValidatorHandler, updateSpecialtyController)
 
 // Delete specialties
 adminRouter.delete('/delete-specialty/:id', deleteSpecialtyController)

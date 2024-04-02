@@ -1,3 +1,7 @@
+
+const { unlink } = require('fs')
+const path = require('path');
+const createError = require('http-errors');
 const Specialty = require("../models/Specialty")
 
 const addSpecialtyController = async (req, res) => {
@@ -9,11 +13,11 @@ const addSpecialtyController = async (req, res) => {
         if (req?.files?.length > 0) {
             newSpecialty = new Specialty({ specialtyName, specialtyDescription, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req?.files[0]?.filename}`, admin: req.userId })
         } else {
-            newSpecialty = new Specialty({ ...req.body })
+            newSpecialty = new Specialty({ ...req.body, admin: req.userId })
         }
         await newSpecialty.save()
         if (newSpecialty) {
-            res.status(200).send({ msg: `Specialty inserted successfully!`, _id: newSpecialty?._id })
+            res.status(200).send({ msg: `Specialty inserted successfully!`,  newSpecialty })
         } else {
             // Remove the uploaded file
             if (req.files?.length > 0) {
@@ -40,7 +44,7 @@ const addSpecialtyController = async (req, res) => {
     }
 }
 
-const getSpecialtyController = async (req, res) => {
+const getSpecialtiesController = async (req, res) => {
     try {
         const specialties = await Specialty.find({}, { __v: 0 }).populate("admin", "name email -_id")
         if (specialties) {
@@ -65,9 +69,7 @@ const updateSpecialtyController = async (req, res) => {
     try {
         if (req.files?.length > 0) {
             updatedData = { ...receivedData, specialtyLogo: `${process.env.SERVER_BASE_URL}/${req.files?.[0]?.filename}` }
-        } else {
-            updatedData = { ...receivedData, specialtyLogo: req.body?.specialtyLogo }
-        }
+        } 
         const updatedSpecialty = await Specialty.findByIdAndUpdate(id, updatedData, { new: true })
         if (updatedSpecialty) {
 
@@ -105,7 +107,7 @@ const deleteSpecialtyController = async (req, res) => {
                 })
             }
             res.status(200).send({
-                message: 'Specialty deleted successfully'
+                message: 'Specialty deleted successfully', deleteSpecialty
             })
         } else {
             throw createError('Specialty not found to delete')
@@ -120,4 +122,4 @@ const deleteSpecialtyController = async (req, res) => {
 
 }
 
-module.exports = { addSpecialtyController, getSpecialtyController, updateSpecialtyController, deleteSpecialtyController }
+module.exports = { addSpecialtyController, getSpecialtiesController, updateSpecialtyController, deleteSpecialtyController }

@@ -9,6 +9,20 @@ const addSpecialtyValidator = [
         return ['image/jpeg', 'image/jpg', 'image/png'].includes(req.files?.[0]?.mimetype || `image/${fileExt?.split('.')?.[1]}`)
     }).withMessage('Please submit JPG, JPEG or PNG image file.'),
 ]
+const updateSpecialtyValidator = [
+    check('specialtyName').optional().isLength({ min: 1 }).withMessage('Specialty name is required!'),
+    check('specialtyDescription').optional().isLength({ min: 1, max: 110 }).withMessage('Specialty description must be between 1 and 110 characters long!'),
+    check('specialtyLogo').optional().custom((value, { req }) => {
+
+        if (!value) {
+            // No file provided, so it's optional
+            return true;
+        }
+
+        const fileExt = path.extname(value)
+        return ['image/jpeg', 'image/jpg', 'image/png'].includes(req.files?.[0]?.mimetype || `image/${fileExt?.split('.')?.[1]}`)
+    }).withMessage('Please submit JPG, JPEG or PNG image file.'),
+]
 
 const addSpecialtyValidatorHandler = (req, res, next) => {
     const errors = validationResult(req)
@@ -26,4 +40,4 @@ const addSpecialtyValidatorHandler = (req, res, next) => {
     }
 }
 
-module.exports = {addSpecialtyValidator, addSpecialtyValidatorHandler}
+module.exports = {addSpecialtyValidator, updateSpecialtyValidator, addSpecialtyValidatorHandler}
