@@ -40,7 +40,7 @@ const addSpecialtyController = async (req, res) => {
     }
 }
 
-const getSpecialtyController =  async (req, res) => {
+const getSpecialtyController = async (req, res) => {
     try {
         const specialties = await Specialty.find({}, { __v: 0 }).populate("admin", "name email -_id")
         if (specialties) {
@@ -68,7 +68,7 @@ const updateSpecialtyController = async (req, res) => {
         } else {
             updatedData = { ...receivedData, specialtyLogo: req.body?.specialtyLogo }
         }
-        const updatedSpecialty = await Specialty.findByIdAndUpdate(id, updatedData)
+        const updatedSpecialty = await Specialty.findByIdAndUpdate(id, updatedData, { new: true })
         if (updatedSpecialty) {
 
             // Deleted prev file from server
@@ -78,7 +78,7 @@ const updateSpecialtyController = async (req, res) => {
                     if (err) console.log(err?.message, 'error from remove file');
                 })
             }
-            res.status(200).send({ message: 'Specialty updated', id: updatedSpecialty?._id })
+            res.status(200).send({ message: 'Specialty updated', updatedSpecialty })
         } else {
             throw createError('Specialty not found to update')
         }
@@ -120,4 +120,4 @@ const deleteSpecialtyController = async (req, res) => {
 
 }
 
-module.exports = {addSpecialtyController, getSpecialtyController, updateSpecialtyController, deleteSpecialtyController}
+module.exports = { addSpecialtyController, getSpecialtyController, updateSpecialtyController, deleteSpecialtyController }
