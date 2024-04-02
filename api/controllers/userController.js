@@ -1,19 +1,12 @@
-const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
-const userRouter = express.Router()
-const User = require('../models/Users')
-const avatarUpload = require('../middleware/multer/avatarUpload')
 const { unlink } = require('fs')
 const path = require('path');
-const jwtVerify = require('../middleware/authGuard/jwtVerify')
-const { addUserValidator, addUserValidatorHandler } = require('../middleware/validator/userValidator')
-const createError = require('http-errors')
-const adminVerify = require('../middleware/authGuard/adminVerify')
+const createError = require('http-errors');
+const User = require('../models/Users');
 
 
-
-userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandler, async (req, res) => {
+const createUserController = async (req, res) => {
 
     try {
         const { name, email, gender, phone, password, role, avatar } = req.body
@@ -65,9 +58,9 @@ userRouter.post('/signup', avatarUpload, addUserValidator, addUserValidatorHandl
             res.status(500).send({ errors: { common: { msg: `There was a server side error` } } })
         }
     }
-})
+}
 
-userRouter.post('/signin', async (req, res) => {
+const signinUserController = async (req, res) => {
     try {
         const { username, password } = req.body
 
@@ -95,10 +88,9 @@ userRouter.post('/signin', async (req, res) => {
             res.status(500).send({ errors: { common: { msg: 'Authentication failed!' } } })
         }
     }
-})
+}
 
-// All users
-userRouter.get('/all-users', async (req, res) => {
+const getAllUsersController = async (req, res) => {
     try {
         const users = await User.find({}, { __v: 0 })
         if (users) {
@@ -116,10 +108,9 @@ userRouter.get('/all-users', async (req, res) => {
             res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
         }
     }
-})
+}
 
-// Get profile 
-userRouter.get('/user-profile', jwtVerify, async (req, res) => {
+const getOwnProfileController = async (req, res) => {
     try {
         const username = req.username
         const user = await User.findOne({ $or: [{ email: username }, { phone: username }] }, { __v: 0 })
@@ -138,10 +129,9 @@ userRouter.get('/user-profile', jwtVerify, async (req, res) => {
             res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
         }
     }
-})
+}
 
-// TODO: remove avatar after remove user
-userRouter.delete('/delete-user/:id', jwtVerify, adminVerify, async (req, res) => {
+const deleteUserController = async (req, res) => {
     const id = req.params?.id
     try {
         const deletedUser = await User.findByIdAndDelete(id)
@@ -168,7 +158,6 @@ userRouter.delete('/delete-user/:id', jwtVerify, adminVerify, async (req, res) =
     }
 
 
-})
+}
 
-
-module.exports = userRouter
+module.exports = {createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserController}

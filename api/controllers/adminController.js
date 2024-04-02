@@ -1,36 +1,6 @@
-const express = require('express');
-const adminRouter = express.Router()
-const jwtVerify = require('../middleware/authGuard/jwtVerify');
-const createError = require('http-errors')
-const { unlink } = require('fs')
-const path = require('path')
+const Specialty = require("../models/Specialty")
 
-// Model
-const Specialty = require('../models/Specialty');
-const { addSpecialtyValidator, addSpecialtyValidatorHandler } = require('../middleware/validator/specialtyValidator');
-const adminVerify = require('../middleware/authGuard/adminVerify');
-const specialtyUpload = require('../middleware/multer/specialtyUpload');
-
-// Testing middleware
-const adminLogger = (req, res, next) => {
-    console.log('admin router fired!');
-    next()
-}
-
-
-// Both are same for use application level middleware
-// adminRouter.use(adminLogger)
-adminRouter.all('*', adminLogger)
-
-
-adminRouter.get('/', (req, res) => {
-    // res.send('This is admin home!')
-    // throw new Error('error happened')
-    res.send('This is admin home!')
-})
-
-// Insert specialty
-adminRouter.post('/add-specialty', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+const addSpecialtyController = async (req, res) => {
 
     try {
         const { specialtyName, specialtyDescription, specialtyLogo } = req.body
@@ -68,11 +38,9 @@ adminRouter.post('/add-specialty', specialtyUpload, addSpecialtyValidator, addSp
             return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
         }
     }
-})
+}
 
-
-// Get specialties
-adminRouter.get('/specialties', async (req, res) => {
+const getSpecialtyController =  async (req, res) => {
     try {
         const specialties = await Specialty.find({}, { __v: 0 }).populate("admin", "name email -_id")
         if (specialties) {
@@ -85,10 +53,9 @@ adminRouter.get('/specialties', async (req, res) => {
         }
         return res.status(500).send({ errors: { common: { msg: "There was a server side error!" } } })
     }
-})
+}
 
-// Update specialties
-adminRouter.patch('/update-specialty/:id', specialtyUpload, addSpecialtyValidator, addSpecialtyValidatorHandler, async (req, res) => {
+const updateSpecialtyController = async (req, res) => {
     const id = req.params?.id
     const receivedData = req.body
     let updatedData
@@ -123,10 +90,9 @@ adminRouter.patch('/update-specialty/:id', specialtyUpload, addSpecialtyValidato
         }
     }
 
-})
+}
 
-// Delete specialties
-adminRouter.delete('/delete-specialty/:id', async (req, res) => {
+const deleteSpecialtyController = async (req, res) => {
     const id = req.params?.id
     try {
         const deleteSpecialty = await Specialty.findByIdAndDelete(id)
@@ -152,12 +118,6 @@ adminRouter.delete('/delete-specialty/:id', async (req, res) => {
         }
     }
 
-})
+}
 
-adminRouter.get('/pending-doctors', (req, res) => {
-    res.send('This is pending doctors route!')
-})
-
-
-
-module.exports = adminRouter
+module.exports = {addSpecialtyController, getSpecialtyController, updateSpecialtyController, deleteSpecialtyController}

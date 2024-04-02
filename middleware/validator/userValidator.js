@@ -1,8 +1,8 @@
 const { check, validationResult } = require("express-validator")
 const createError = require("http-errors")
-const User = require('../../models/Users')
 const path = require('path');
 const { unlink } = require("fs");
+const User = require("../../api/models/Users");
 
 const addUserValidator = [
     check('name').isLength({ min: 1 }).withMessage('Name is required!').isAlpha("en-US", { ignore: " -" }).withMessage('Name must not contain anything other than alphabet').trim(),

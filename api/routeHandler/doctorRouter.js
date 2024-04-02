@@ -1,10 +1,10 @@
 const express = require('express')
 const doctorRouter = express.Router('')
-const jwtVerify = require('../middleware/authGuard/jwtVerify')
+const jwtVerify = require('../../middleware/authGuard/jwtVerify')
 const Doctor = require('../models/Doctors')
 
 
-
+// TODO: Need to optimize doctor route
 
 // insert a doctor
 doctorRouter.post('/insert-doctor', async (req, res) => {

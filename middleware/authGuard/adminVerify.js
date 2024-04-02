@@ -1,4 +1,4 @@
-const User = require("../../models/Users")
+const User = require("../../api/models/Users")
 
 const adminVerify = async (req, res, next) => {
     try {
