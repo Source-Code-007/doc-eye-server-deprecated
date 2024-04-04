@@ -1,10 +1,23 @@
 const mongoose = require('mongoose')
 
 const doctorSchema = mongoose.Schema({
-    doctorName: String,
-    age: Number,
     title: String,
-}, {timestamps: true})
+    doctorType: String,
+    bio: String,
+    medical_specialty: Array,
+    total_experience: String,
+    educationalExcellent: String,
+    consultationFee: Number,
+    followupFee: Number,
+    workingExperiences: Array,
+    dateOfBirth: String,
+    current_workplace: String,
+    availability: Object,
+    personalInformation: {
+        type: mongoose.Types.ObjectId,
+        ref: 'User'
+    }
+}, { timestamps: true })
 
 
 const Doctor = new mongoose.model('Doctor', doctorSchema)

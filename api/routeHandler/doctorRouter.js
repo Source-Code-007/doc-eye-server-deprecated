@@ -2,16 +2,23 @@ const express = require('express')
 const doctorRouter = express.Router('')
 const jwtVerify = require('../../middleware/authGuard/jwtVerify')
 const Doctor = require('../models/Doctors')
+const User = require('../models/Users')
 
 
 // TODO: Need to optimize doctor route
 
 // insert a doctor
-doctorRouter.post('/insert-doctor', async (req, res) => {
+doctorRouter.post('/doctor-register', jwtVerify, async (req, res) => {
     try {
-        const newDoctor = new Doctor(req.body)
+        console.log(req.body, 'req body');
+        const newDoctor = new Doctor({...req.body, personalInformation:req.userId})
+        // const userId = req.userId
+        // const user = await User.findById(userId).select({_id:0, __v:0, createdAt:0, updatedAt:0, password:0, role:0})
+        
+        // console.log(user);
+        
         await newDoctor.save()
-        res.status(200).send({ message: 'doctor inserted successfully!', _id: newDoctor?._id })
+        res.status(200).send({ message: 'doctor inserted successfully!', newDoctor })
     } catch (e) {
         res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
@@ -22,7 +29,7 @@ doctorRouter.post('/insert-doctor', async (req, res) => {
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
     try {
-        const allDoctors = await Doctor.find({}, { __v: 0 })
+        const allDoctors = await Doctor.find({}, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
         if (allDoctors) {
             res.status(200).send({
                 message: 'Doctors found!',
