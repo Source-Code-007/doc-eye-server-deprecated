@@ -1,8 +1,8 @@
 const { check, validationResult } = require("express-validator")
-const createError = require("http-errors")
 const path = require('path');
 const { unlink } = require("fs");
 const User = require("../../api/models/Users");
+const createHttpError = require("http-errors");
 
 const addUserValidator = [
     check('name').isLength({ min: 1 }).withMessage('Name is required!').isAlpha("en-US", { ignore: " -" }).withMessage('Name must not contain anything other than alphabet').trim(),
@@ -15,10 +15,10 @@ const addUserValidator = [
         try {
             const isExistUser = await User.findOne({ email: value })
             if (isExistUser) {
-                throw createError("Email already is use!")
+                throw createHttpError("Email already is use!")
             }
         } catch (e) {
-            throw createError(e.message)
+            throw createHttpError(e.message)
         }
     }),
 
@@ -31,10 +31,10 @@ const addUserValidator = [
         try {
             const isExistPhone = await User.findOne({ phone: value })
             if (isExistPhone) {
-                throw createError("Phone already is use!")
+                throw createHttpError("Phone already is use!")
             }
         } catch (e) {
-            throw createError(e.message)
+            throw createHttpError(e.message)
         }
     }),
 

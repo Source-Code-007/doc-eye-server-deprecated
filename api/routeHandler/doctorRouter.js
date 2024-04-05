@@ -3,12 +3,13 @@ const doctorRouter = express.Router('')
 const jwtVerify = require('../../middleware/authGuard/jwtVerify')
 const Doctor = require('../models/Doctors')
 const User = require('../models/Users')
+const { addDoctorValidator, addDoctorValidatorHandler } = require('../../middleware/validator/doctorValidator')
 
 
 // TODO: Need to optimize doctor route
 
 // insert a doctor
-doctorRouter.post('/doctor-register', jwtVerify, async (req, res) => {
+doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorValidatorHandler, async (req, res) => {
     try {
         console.log(req.body, 'req body');
         const newDoctor = new Doctor({...req.body, personalInformation:req.userId})
