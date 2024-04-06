@@ -18,7 +18,7 @@ const addDoctorValidator = [
         }
     }),
     check('total_experience').isLength({ min: 1 }).withMessage('Total experience is required!'),
-    check('educationalExcellent').isLength({ min: 1 }).withMessage('Educational excellent is required!'),
+    check('medical_degree').isLength({ min: 1 }).withMessage('Educational excellent is required!'),
     check('consultationFee').isNumeric({ min: 1 }).withMessage('Consultation fee is must be numeric number'),
     check('followupFee').isNumeric({ min: 1 }).withMessage('Followup fee is must be numeric number'),
     check('workingExperiences').isArray(),

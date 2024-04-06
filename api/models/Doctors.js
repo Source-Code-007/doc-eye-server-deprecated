@@ -6,7 +6,7 @@ const doctorSchema = mongoose.Schema({
     bio: String,
     medical_specialty: Array,
     total_experience: String,
-    educationalExcellent: String,
+    medical_degree: String,
     consultationFee: Number,
     followupFee: Number,
     workingExperiences: Array,
