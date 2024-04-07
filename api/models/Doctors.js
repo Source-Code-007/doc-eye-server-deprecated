@@ -13,6 +13,7 @@ const doctorSchema = mongoose.Schema({
     dateOfBirth: String,
     current_workplace: String,
     availability: Object,
+    district: String,
     personalInformation: {
         type: mongoose.Types.ObjectId,
         ref: 'User'

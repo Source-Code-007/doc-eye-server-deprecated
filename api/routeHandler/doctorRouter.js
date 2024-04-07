@@ -34,13 +34,13 @@ doctorRouter.get('/all-doctors', async (req, res) => {
         const modifiedDoctors = allDoctors.map(doctor => {
             const docObj = doctor.toObject()
             if(docObj.district){
-                docObj.personalInformation?.district = docObj.district
+                docObj.personalInformation.district = docObj.district
             }
             delete docObj.district
             return docObj
         })
 
-        if (allDoctors) {
+        if (modifiedDoctors) {
             res.status(200).send({
                 message: 'Doctors found!',
                 data: modifiedDoctors
