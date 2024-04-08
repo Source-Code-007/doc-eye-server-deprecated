@@ -41,9 +41,9 @@ const addDoctorValidator = [
     }),
     check('current_workplace').isLength({ min: 1 }).withMessage('Current workplace is required!'),
     check('availability').isObject().withMessage('Availability must be an object').custom(value => {
-        const missingProperty = ['availabilityDays', 'availabilityTimeStart', 'availabilityTimeEnd'].filter(item => !value.hasOwnProperty(item))
+        const missingProperty = ['availabilityDayStart', 'availabilityDayEnd', 'availabilityTimeStart', 'availabilityTimeEnd'].filter(item => !value.hasOwnProperty(item))
         if (missingProperty.length > 0) {
-            throw createHttpError("Availability must be an object with these properties - 'availabilityDays', 'availabilityTimeStart', 'availabilityTimeEnd'")
+            throw createHttpError("Availability must be an object with these properties - 'availabilityDayStart', 'availabilityDayEnd', 'availabilityTimeStart', 'availabilityTimeEnd'")
         }
 
         return true

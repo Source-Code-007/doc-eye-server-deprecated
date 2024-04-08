@@ -14,11 +14,26 @@ const doctorSchema = mongoose.Schema({
     current_workplace: String,
     availability: Object,
     district: String,
+    patient_attended: { type: Number, default: 0 },
+    doctor_code: String,
     personalInformation: {
         type: mongoose.Types.ObjectId,
         ref: 'User'
     }
 }, { timestamps: true })
+
+
+doctorSchema.pre('save', async function(next) {
+    try {
+        if (!this.doctor_code) {
+            const count = await this.constructor.countDocuments();
+            this.doctor_code = `DE${count + 1}`;
+        }
+        next();
+    } catch (error) {
+        next(error);
+    }
+});
 
 
 const Doctor = new mongoose.model('Doctor', doctorSchema)
