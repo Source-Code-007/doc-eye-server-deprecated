@@ -11,11 +11,8 @@ const { addDoctorValidator, addDoctorValidatorHandler } = require('../../middlew
 doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorValidatorHandler, async (req, res) => {
     try {
         console.log(req.body, 'req body');
-        const newDoctor = new Doctor({ ...req.body, personalInformation: req.userId })
-        // const userId = req.userId
-        // const user = await User.findById(userId).select({_id:0, __v:0, createdAt:0, updatedAt:0, password:0, role:0})
+        const newDoctor = new Doctor({ ...req.body, personalInformation: req.userId})
 
-        // console.log(user);
 
         await newDoctor.save()
         res.status(200).send({ message: 'doctor inserted successfully!', newDoctor })
@@ -28,8 +25,13 @@ doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorVa
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
+    // const {status} = req.query
+    // console.log(status);
     try {
         const allDoctors = await Doctor.find({}, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
+
+        console.log(allDoctors, 'allDoctors');
+
 
         const modifiedDoctors = allDoctors.map(doctor => {
             const docObj = doctor.toObject()

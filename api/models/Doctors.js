@@ -15,6 +15,7 @@ const doctorSchema = mongoose.Schema({
     availability: Object,
     district: String,
     patient_attended: { type: Number, default: 0 },
+    status: {type: String, default: 'Pending'},
     doctor_code: String,
     personalInformation: {
         type: mongoose.Types.ObjectId,

@@ -48,7 +48,7 @@ const getSpecialtiesController = async (req, res) => {
     try {
         const specialties = await Specialty.find({}, { __v: 0 }).populate("admin", "name email -_id")
         if (specialties) {
-            return res.status(200).send(specialties)
+            return res.status(200).send({message: 'Specialties found', data:specialties})
         }
         return res.status(500).send({ errors: { common: { msg: 'Specialties not found!' } } })
     } catch (e) {
