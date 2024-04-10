@@ -15,7 +15,7 @@ const doctorSchema = mongoose.Schema({
     availability: Object,
     district: String,
     patient_attended: { type: Number, default: 0 },
-    status: {type: String, default: 'Pending'},
+    status: {type: String, required: true, enum: ['Pending', 'Approved', 'Rejected'], default: 'Pending'},
     doctor_code: String,
     personalInformation: {
         type: mongoose.Types.ObjectId,
@@ -24,6 +24,7 @@ const doctorSchema = mongoose.Schema({
 }, { timestamps: true })
 
 
+// Set doctor code based on doctor counting using pre middleware from mongoose
 doctorSchema.pre('save', async function(next) {
     try {
         if (!this.doctor_code) {

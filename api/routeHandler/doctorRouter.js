@@ -10,7 +10,7 @@ const { addDoctorValidator, addDoctorValidatorHandler } = require('../../middlew
 // insert a doctor
 doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorValidatorHandler, async (req, res) => {
     try {
-        console.log(req.body, 'req body');
+        console.log(req.body, 'req body from doctor register');
         const newDoctor = new Doctor({ ...req.body, personalInformation: req.userId})
 
 

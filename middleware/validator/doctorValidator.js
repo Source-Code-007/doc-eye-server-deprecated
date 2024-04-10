@@ -48,6 +48,7 @@ const addDoctorValidator = [
 
         return true
     }),
+    check('status').default('Pending').isIn(['Pending', 'Approved', 'Rejected']).withMessage('Invalid status. Only "Pending", "Approved" or "Rejected" is allowed!'),
     check('district').isIn([
         "Dhaka",
         "Chittagong",
