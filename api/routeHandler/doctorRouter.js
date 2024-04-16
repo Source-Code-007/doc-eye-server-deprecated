@@ -13,7 +13,6 @@ doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorVa
         console.log(req.body, 'req body from doctor register');
         const newDoctor = new Doctor({ ...req.body, personalInformation: req.userId})
 
-
         await newDoctor.save()
         res.status(200).send({ message: 'doctor inserted successfully!', newDoctor })
     } catch (e) {
@@ -25,12 +24,11 @@ doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorVa
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
-    // const {status} = req.query
-    // console.log(status);
+
     try {
         const allDoctors = await Doctor.find({}, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
 
-        console.log(allDoctors, 'allDoctors');
+        // console.log(allDoctors, 'allDoctors');
 
 
         const modifiedDoctors = allDoctors.map(doctor => {
@@ -52,7 +50,7 @@ doctorRouter.get('/all-doctors', async (req, res) => {
         }
     }
     catch (e) {
-        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+        res.status(500).send({ errors: { common: { msg: `There was a server side error! ${e}` } } })
     }
 
 })
@@ -87,16 +85,58 @@ doctorRouter.delete('/delete-doctor/:id', async (req, res) => {
         // const deleteDoctor = await Doctor.deleteOne({doctorName: 'test'})
         // const deleteDoctors = await Doctor.deleteMany({doctorName: 'test'})
         if (deleteDoctor) {
-            res.send(`Deleted doctor: ${deleteDoctor}`)
+            res.status(200).send({
+                message: 'Deleted doctor!',
+                data: this.delete
+            })
         } else {
-            res.status(500).send({ errors: { common: { msg: 'Doctor not found!' } } })
+            res.status(500).send({ errors: { common: { msg: 'Doctor not deleted!' } } })
         }
     } catch (e) {
         res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
 })
 
-// Update expected doctor
+// Approve doctor
+doctorRouter.patch('/approve-doctor/:id', async(req, res)=> {
+    try{
+        const _id = req.params?.id
+        const updatedDoctor = await Doctor.findByIdAndUpdate(_id, {
+            $set: {
+                status: 'Approve'
+            }
+        })
+        if(updatedDoctor){
+            res.status(200).send({ message: 'Doctor approved!',
+            data: updatedDoctor})
+        } else{
+            res.status(500).send({ errors: { common: { msg: 'Doctor not approved!' } } })
+        }
+    }catch(e){
+        res.status(500).send({ errors: { common: { msg: `There was a server side error! ${e}` } } })
+    }
+})
+// Approve doctor
+doctorRouter.patch('/reject-doctor/:id', async(req, res)=> {
+    try{
+        const _id = req.params?.id
+        const updatedDoctor = await Doctor.findByIdAndUpdate(_id, {
+            $set: {
+                status: 'Reject'
+            }
+        })
+        if(updatedDoctor){
+            res.status(200).send({ message: 'Doctor Rejected!',
+            data: updatedDoctor})
+        } else{
+            res.status(500).send({ errors: { common: { msg: 'Doctor not rejected!' } } })
+        }
+    }catch(e){
+        res.status(500).send({ errors: { common: { msg: `There was a server side error! ${e}` } } })
+    }
+})
+
+// Update expected doctor -- On progress
 doctorRouter.patch('/update-doctor/:id', async (req, res) => {
     try {
 
