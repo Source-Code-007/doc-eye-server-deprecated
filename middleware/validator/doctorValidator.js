@@ -114,6 +114,8 @@ const addDoctorValidator = [
         "Cox's Bazar",
         "Munshiganj"
     ]).withMessage('Invalid district. Only Bangladeshi valid district name is allowed.'),
+    check('NID').isNumeric().withMessage('The NID must be a numeric value.'),
+    check('BMDC').isNumeric().withMessage('The BMDC must be a numeric value.')
 ]
 
 const addDoctorValidatorHandler = (req, res, next) => {

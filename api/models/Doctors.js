@@ -14,6 +14,8 @@ const doctorSchema = mongoose.Schema({
     current_workplace: String,
     availability: Object,
     district: String,
+    NID: Number,
+    BMDC: Number,
     patient_attended: { type: Number, default: 0 },
     status: {type: String, required: true, enum: ['Pending', 'Approve', 'Reject'], default: 'Pending'},
     doctor_code: String,
