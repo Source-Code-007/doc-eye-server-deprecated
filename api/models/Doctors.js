@@ -17,7 +17,7 @@ const doctorSchema = mongoose.Schema({
     NID: Number,
     BMDC: Number,
     patient_attended: { type: Number, default: 0 },
-    status: {type: String, required: true, enum: ['Pending', 'Approve', 'Reject'], default: 'Pending'},
+    status: {type: String, required: true, enum: ['pending', 'approve', 'reject'], default: 'pending'},
     doctor_code: String,
     personalInformation: {
         type: mongoose.Types.ObjectId,

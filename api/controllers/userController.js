@@ -92,7 +92,15 @@ const signinUserController = async (req, res) => {
 
 const getAllUsersController = async (req, res) => {
     try {
-        const users = await User.find({}, { __v: 0 })
+        const { role } = req.query
+        let find = {}
+        
+        if (role) {
+                const roleArray = role.split(',')
+                find = { role: { $in: roleArray } }
+            }
+
+        const users = await User.find(find, { __v: 0 })
         if (users) {
             res.status(200).send({
                 message: 'Users found!',
@@ -160,4 +168,4 @@ const deleteUserController = async (req, res) => {
 
 }
 
-module.exports = {createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserController}
+module.exports = { createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserController }
