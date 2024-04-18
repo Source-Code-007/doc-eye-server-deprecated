@@ -4,6 +4,7 @@ const { unlink } = require('fs')
 const path = require('path');
 const createError = require('http-errors');
 const User = require('../models/Users');
+const Doctor = require('../models/Doctors');
 
 
 const createUserController = async (req, res) => {
@@ -94,11 +95,11 @@ const getAllUsersController = async (req, res) => {
     try {
         const { role } = req.query
         let find = {}
-        
+
         if (role) {
-                const roleArray = role.split(',')
-                find = { role: { $in: roleArray } }
-            }
+            const roleArray = role.split(',')
+            find = { role: { $in: roleArray } }
+        }
 
         const users = await User.find(find, { __v: 0 })
         if (users) {
@@ -140,32 +141,32 @@ const getOwnProfileController = async (req, res) => {
 }
 
 const deleteUserController = async (req, res) => {
+
     const id = req.params?.id
     try {
         const deletedUser = await User.findByIdAndDelete(id)
-        if (deletedUser) {
-            // Remove the uploaded file
-            if (deletedUser?.avatar) {
-                const fileName = deletedUser?.avatar.split('/').at(-1)
-                unlink(path.join(__dirname, `../upload/avatar/${fileName}`), err => {
-                    if (err) console.log(err?.message, 'error from remove file');
-                })
-            }
-            res.status(200).send({
-                message: 'User deleted successfully!',
-            })
-        } else {
+        if (!deletedUser) {
             throw createError('User not found to delete')
         }
-    } catch (e) {
-        if (e?.message) {
-            res.status(500).send({ errors: { common: { msg: e?.message } } })
-        } else {
-            res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+
+        // If doctor account exist, then remove
+        await Doctor.findOneAndDelete({ personalInformation: deletedUser._id })
+
+        // Remove the uploaded file
+        if (deletedUser?.avatar) {
+            const fileName = deletedUser?.avatar.split('/').at(-1)
+            unlink(path.join(__dirname, `../upload/avatar/${fileName}`), err => {
+                if (err) console.log(err?.message, 'error from remove file');
+            })
         }
+        res.status(200).send({
+            message: 'User deleted successfully!',
+            data: deletedUser
+        })
+    } catch (e) {
+        const errorMessage = `Server err: ${e}` || 'There was a server side error!';
+        res.status(500).send({ errors: { common: { msg: errorMessage } } });
     }
-
-
 }
 
 module.exports = { createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserController }

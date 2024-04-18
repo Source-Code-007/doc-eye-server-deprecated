@@ -89,10 +89,10 @@ doctorRouter.delete('/delete-doctor/:id', async (req, res) => {
         if (deleteDoctor) {
             res.status(200).send({
                 message: 'Deleted doctor!',
-                data: this.delete
+                data: deleteDoctor
             })
         } else {
-            res.status(500).send({ errors: { common: { msg: 'Doctor not deleted!' } } })
+            res.status(500).send({ errors: { common: { msg: 'Doctor not found to delete!' } } })
         }
     } catch (e) {
         res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
@@ -175,7 +175,6 @@ doctorRouter.patch('/update-doctor/:id', async (req, res) => {
         res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
 })
-
 
 
 module.exports = doctorRouter
