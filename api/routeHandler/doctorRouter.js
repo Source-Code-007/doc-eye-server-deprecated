@@ -26,9 +26,36 @@ doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorVa
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
+    const { specialty, minConsultationFee, maxConsultationFee, sortBy, availability, rating } = req.query
+
+    console.log(`Specialty: ${specialty}, Min Consultation Fee: ${minConsultationFee}, Max Consultation Fee: ${maxConsultationFee}, Sort By: ${sortBy}, Availability: ${availability}, Rating: ${rating}`);
+
+
+    let find = {}
+    if (specialty) {
+        const specialtyArray = specialty.split(',')
+        find = { medical_specialty: { $in: specialtyArray } }
+    }
+    if(minConsultationFee){
+        find = {...find, consultationFee: {...find.consultationFee, $gte: Number(minConsultationFee)}}
+    }
+    if(maxConsultationFee){
+        find = {...find, consultationFee: {...find.consultationFee, $lte: Number(maxConsultationFee)}}
+    }
+    if(sortBy){
+
+    }
+    if(availability){
+
+    }
+    if(rating){
+        
+    }
+
+    console.log(find);
 
     try {
-        const allDoctors = await Doctor.find({}, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
+        const allDoctors = await Doctor.find(find, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
 
         // console.log(allDoctors, 'allDoctors');
 
