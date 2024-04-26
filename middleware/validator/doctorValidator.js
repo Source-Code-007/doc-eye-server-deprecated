@@ -18,7 +18,7 @@ const addDoctorValidator = [
             throw createHttpError(e.message);
         }
     }),
-    check('total_experience').isLength({ min: 1 }).withMessage('Total experience is required!'),
+    check('total_experience_year').isLength({ min: 1 }).withMessage('Total experience is required!').isNumeric().withMessage('Total experience must be a numeric value.'),
     check('medical_degree').isLength({ min: 1 }).withMessage('Educational excellent is required!'),
     check('consultationFee').isFloat({min: 100, max:5000}).withMessage('The consultation fee must be a numeric value between 100 and 5000.'),
     check('followupFee').isNumeric().withMessage('The followup fee must be a numeric value.').custom((val, { req }) => {

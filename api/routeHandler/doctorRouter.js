@@ -26,15 +26,20 @@ doctorRouter.post('/doctor-register', jwtVerify, addDoctorValidator, addDoctorVa
 // Get all doctors
 doctorRouter.get('/all-doctors', async (req, res) => {
     // const allDoctors = await Doctor.find({}).select({ __v: 0 })
-    const { specialty, minConsultationFee, maxConsultationFee, sortBy, availability, rating } = req.query
+    const { status, specialty, minConsultationFee, maxConsultationFee, sortBy, availability, rating } = req.query
 
     console.log(`Specialty: ${specialty}, Min Consultation Fee: ${minConsultationFee}, Max Consultation Fee: ${maxConsultationFee}, Sort By: ${sortBy}, Availability: ${availability}, Rating: ${rating}`);
 
 
     let find = {}
+    let sort = {}
+
+    if(status){
+        find = {...find, status: {$in: status}}
+    }
     if (specialty) {
         const specialtyArray = specialty.split(',')
-        find = { medical_specialty: { $in: specialtyArray } }
+        find = {...find, medical_specialty: { $in: specialtyArray } }
     }
     if(minConsultationFee){
         find = {...find, consultationFee: {...find.consultationFee, $gte: Number(minConsultationFee)}}
@@ -42,9 +47,8 @@ doctorRouter.get('/all-doctors', async (req, res) => {
     if(maxConsultationFee){
         find = {...find, consultationFee: {...find.consultationFee, $lte: Number(maxConsultationFee)}}
     }
-    if(sortBy){
 
-    }
+    
     if(availability){
 
     }
@@ -52,10 +56,24 @@ doctorRouter.get('/all-doctors', async (req, res) => {
         
     }
 
+    if(sortBy){
+        if(sortBy === 'ascending'){
+            sort = {consultationFee: 'asc'}
+        }
+        if(sortBy === 'descending'){
+            sort = {consultationFee: 'desc'}
+        }
+        if(sortBy === 'experience'){
+            sort = {total_experience: 'asc'}
+        }
+    }
+
+
+
     console.log(find);
 
     try {
-        const allDoctors = await Doctor.find(find, { __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
+        const allDoctors = await Doctor.find(find, { __v: 0 }).sort(sort).populate('personalInformation', 'name avatar gender email phone -_id')
 
         // console.log(allDoctors, 'allDoctors');
 

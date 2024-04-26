@@ -5,7 +5,7 @@ const doctorSchema = mongoose.Schema({
     doctorType: String,
     bio: String,
     medical_specialty: Array,
-    total_experience: String,
+    total_experience_year: Number,
     medical_degree: String,
     consultationFee: Number,
     followupFee: Number,
@@ -18,7 +18,7 @@ const doctorSchema = mongoose.Schema({
     BMDC: Number,
     patient_attended: { type: Number, default: 0 },
     status: {type: String, required: true, enum: ['pending', 'approve', 'reject'], default: 'pending'},
-    doctor_code: String,
+    doctor_code: {type:String, default: `DE_${Date.now()}`},
     personalInformation: {
         type: mongoose.Types.ObjectId,
         ref: 'User'
@@ -26,18 +26,6 @@ const doctorSchema = mongoose.Schema({
 }, { timestamps: true })
 
 
-// Set doctor code based on doctor counting using pre middleware from mongoose
-doctorSchema.pre('save', async function(next) {
-    try {
-        if (!this.doctor_code) {
-            const count = await this.constructor.countDocuments();
-            this.doctor_code = `DE${count + 1}`;
-        }
-        next();
-    } catch (error) {
-        next(error);
-    }
-});
 
 
 const Doctor = new mongoose.model('Doctor', doctorSchema)
