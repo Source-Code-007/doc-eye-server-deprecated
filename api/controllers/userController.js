@@ -140,7 +140,7 @@ const getOwnProfileController = async (req, res) => {
     }
 }
 
-const deleteUserController = async (req, res) => {
+const deleteUserByIdController = async (req, res) => {
 
     const id = req.params?.id
     try {
@@ -168,5 +168,6 @@ const deleteUserController = async (req, res) => {
         res.status(500).send({ errors: { common: { msg: errorMessage } } });
     }
 }
+    
 
-module.exports = { createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserController }
+module.exports = { createUserController, signinUserController, getAllUsersController, getOwnProfileController, deleteUserByIdController }

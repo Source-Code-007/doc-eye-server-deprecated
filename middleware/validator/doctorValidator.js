@@ -124,7 +124,7 @@ const addDoctorValidatorHandler = (req, res, next) => {
     const mappedErrors = errors.mapped()
 
 
-    if (Object.keys(mappedErrors).length === 0) {
+    if (Object.keys(mappedErrors)?.length === 0) {
         next()
     } else {
         res.status(500).send({ errors: mappedErrors })
