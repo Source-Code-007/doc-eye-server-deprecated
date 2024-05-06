@@ -5,12 +5,12 @@ const cors = require('cors')
 const path = require('path')
 const app = express()
 
+
 // Internal imports
 const adminRouter = require('./api/routeHandler/adminRouter');
 const doctorRouter = require('./api/routeHandler/doctorRouter');
 const userRouter = require('./api/routeHandler/userRouter');
 const {notFoundErr, errorHandle} = require('./middleware/common/errorHandler');
-
 
 const port = process.env.PORT || 5000
 require('dotenv').config()
