@@ -95,7 +95,7 @@ const getAllDoctorsController = async (req, res) => {
 const getExpectedDoctorByIdController = async (req, res) => {
     try {
         const _id = req.params?.id
-        const expectedDoctor = await Doctor.findById(_id).select({ __v: 0 }).populate('personalInformation', 'name avatar gender email phone -_id')
+        const expectedDoctor = await Doctor.findById(_id).select({ __v: 0 }).populate('personalInformation', 'name avatar gender email phone _id')
         if (expectedDoctor) {
             res.status(200).send({
                 message: 'Expected doctor found!',
@@ -205,15 +205,38 @@ const updateDoctorByIdController = async (req, res) => {
     }
 }
 
+
+
+// Appointment controller ****
 const bookAppointmentController = async (req, res) => {
     try {
         const data = req.body
         const newAppointment = new Appointment(data)
-        res.status(200).send({ message: 'Appointment inserted successfully!', data: newAppointment })
+        await newAppointment.save()
+
+        res.status(200).send({ message: 'Appointment booked successfully!', data: newAppointment })
     }
     catch (e) {
         res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
     }
 }
 
-module.exports = { createDoctorController, getAllDoctorsController, getExpectedDoctorByIdController, deleteDoctorByIdController, approveDoctorByIdController, rejectDoctorByIdController, updateDoctorByIdController, bookAppointmentController}
+const getExpectedDoctorAppointmentsByIdController = async(req, res)=> {
+    const _id = req?.params?.id
+    try{
+        const expectedAppointments = await Appointment.find({doctorInfo: _id}, {__v:0}).populate('patientUserInfo', 'name avatar email phone gender').populate('doctorUserInfo', 'name avatar email phone gender')
+        if(expectedAppointments){
+            res.status(200).send({
+                message: 'Expected doctor appointments found!',
+                data: expectedAppointments
+            })
+        } else{
+            res.status(500).send({ errors: { common: { msg: 'Expected doctor appointments not found!' } } })
+        }
+    }
+    catch(e){
+        res.status(500).send({ errors: { common: { msg: 'There was a server side error!' } } })
+    }
+}
+
+module.exports = { createDoctorController, getAllDoctorsController, getExpectedDoctorByIdController, deleteDoctorByIdController, approveDoctorByIdController, rejectDoctorByIdController, updateDoctorByIdController, bookAppointmentController, getExpectedDoctorAppointmentsByIdController}

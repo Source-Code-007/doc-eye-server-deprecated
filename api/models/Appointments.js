@@ -1,9 +1,10 @@
 const mongoose = require('mongoose')
 
 const appointmentSchema = mongoose.Schema({
-    doctorId: {type: mongoose.Types.ObjectId, ref: 'Doctor'},
-    userId: {type: mongoose.Types.ObjectId, ref: 'User'},
-    bookedDateTime: {Date}
+    doctorInfo: {type: mongoose.Types.ObjectId, ref: 'Doctor'},
+    doctorUserInfo: {type: mongoose.Types.ObjectId, ref: 'User'},
+    patientUserInfo: {type: mongoose.Types.ObjectId, ref: 'User'},
+    bookedDateTime: Date
 })
 
 

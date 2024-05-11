@@ -3,7 +3,7 @@ const doctorRouter = express.Router('')
 const jwtVerify = require('../../middleware/authGuard/jwtVerify')
 const { addDoctorValidator, addDoctorValidatorHandler } = require('../../middleware/validator/doctorValidator')
 const adminVerify = require('../../middleware/authGuard/adminVerify')
-const { createDoctorController, getExpectedDoctorByIdController, deleteDoctorByIdController, approveDoctorByIdController, rejectDoctorByIdController, updateDoctorByIdController, bookAppointmentController, getAllDoctorsController } = require('../controllers/doctorController')
+const { createDoctorController, getExpectedDoctorByIdController, deleteDoctorByIdController, approveDoctorByIdController, rejectDoctorByIdController, updateDoctorByIdController, bookAppointmentController, getAllDoctorsController, getExpectedDoctorAppointmentsByIdController } = require('../controllers/doctorController')
 const { appointmentValidator, appointmentValidatorHandler } = require('../../middleware/validator/appointmentValidator')
 const doctorVerify = require('../../middleware/authGuard/doctorVerify')
 
@@ -34,9 +34,10 @@ doctorRouter.patch('/reject-doctor/:id', jwtVerify, adminVerify, rejectDoctorByI
 doctorRouter.patch('/update-doctor/:id', updateDoctorByIdController)
 
 
-// Book appointment
 // book appointment API
 doctorRouter.post('/book-appointment', appointmentValidator, appointmentValidatorHandler, bookAppointmentController)
+// get expected doctor appointment by id API
+doctorRouter.get('/get-doctor-appointments/:id', getExpectedDoctorAppointmentsByIdController)
 
 
 module.exports = doctorRouter
