@@ -12,7 +12,6 @@ const doctorRouter = require('./api/routeHandler/doctorRouter');
 const userRouter = require('./api/routeHandler/userRouter');
 const {notFoundErr, errorHandle} = require('./middleware/common/errorHandler');
 
-
 const port = process.env.PORT || 5000
 require('dotenv').config()
 
