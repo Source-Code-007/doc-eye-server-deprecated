@@ -206,7 +206,6 @@ const updateDoctorByIdController = async (req, res) => {
 }
 
 
-
 // Appointment controller ****
 const bookAppointmentController = async (req, res) => {
     try {
