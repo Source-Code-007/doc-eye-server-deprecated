@@ -7,6 +7,7 @@ const app = express()
 
 
 
+
 // Internal imports
 const adminRouter = require('./api/routeHandler/adminRouter');
 const doctorRouter = require('./api/routeHandler/doctorRouter');
